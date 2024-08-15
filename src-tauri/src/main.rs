@@ -24,9 +24,14 @@ fn getSpotifyToken() -> String {
     token
 }
 
+#[tauri::command]
+fn current_search(current: &str) {
+    println!("Current search: {}", current);
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test, getSpotifyToken])
+        .invoke_handler(tauri::generate_handler![greet, test, getSpotifyToken, current_search])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
