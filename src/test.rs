@@ -4,6 +4,19 @@ use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use leptos_router::*;
 
+use crate::{
+    ui_elements::{
+        side_nav::SideNav,
+        header::Header,
+    },
+    pages::{
+        my_library::MyLibrary,
+        home::Home,
+        saved::Saved,
+        albums::Albums,
+    },
+};
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
@@ -19,116 +32,22 @@ pub fn Main() -> impl IntoView {
                 <div class="relative min-h-screen md:flex">
                     <SideNav/>
 
-                    <div class="flex-1 p-10 text-2xl font-bold">
-                        <Routes>
-                            <Route path="/" view=Home/>
-                            <Route path="/myLibrary" view=myLibrary/>
-                            <Route path="/saved" view=Saved/>
-                            <Route path="/albums" view=Albums/>
-                            <Route path="/search" view=Search/>
-                            
-                        </Routes>
+                    <div class="flex-1 text-2xl font-bold px-2">
+                        <Header/>
+
+                        <div class="flex-1 border border-neutral-content rounded px-2 py-2">
+                            <Routes>
+                                <Route path="/" view=Home/>
+                                <Route path="/myLibrary" view=MyLibrary/>
+                                <Route path="/saved" view=Saved/>
+                                <Route path="/albums" view=Albums/>
+                                <Route path="/search" view=Search/>
+                                
+                            </Routes>
+                        </div>
                     </div>
                 </div>
             </Router>
-        </div>
-    }
-}
-
-#[component]
-fn SideNav() -> impl IntoView {
-    view! {
-        <div class="sidebar bg-neutral text-neutral-content space-y-6 py-2 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
-            <nav>
-                <a href="/myLibrary" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_library size-6 duration-200"></div>
-
-                    <span>My Library</span>
-                </a>
-
-                <a href="/" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_home size-6 duration-200"></div>
-
-                    <span>Home</span>
-                </a>
-
-                <a href="/saved" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_saved size-6 duration-200"></div>
-
-                    <span>Saved</span>
-                </a>
-
-                <a href="/albums" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_albums size-6 duration-200"></div>
-
-                    <span>Albums</span>
-                </a>
-
-                <a href="/folders" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_folders size-6 duration-200"></div>
-            
-                    <span>Folders</span>
-                </a>
-
-                <a href="/podcasts" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_podcasts size-6 duration-200"></div>
-
-                    <span>Podcasts</span>
-                </a>
-
-                <a href="/Audiobooks" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_audiobooks size-6 duration-200"></div>
-
-                    <span>Audiobooks</span>
-                </a>
-
-                <a href="/artists" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_artists size-6 duration-200"></div>
-            
-                    <span>Artists</span>
-                </a>
-                <a href="/search" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_search size-6 duration-200"></div>
-
-                    <span>Search</span>
-                </a>
-            </nav>
-        </div>
-    }
-}
-
-#[component]
-fn myLibrary() -> impl IntoView {
-    view! {
-        <div>
-            <h1>My Library</h1>
-        </div>
-    }
-}
-
-#[component]
-fn home() -> impl IntoView {
-    view! {
-        <div>
-            <h1>Home</h1>
-        </div>
-    }
-}
-
-#[component]
-fn saved() -> impl IntoView {
-    view! {
-        <div>
-            <h1>Saved</h1>
-        </div>
-    }
-}
-
-#[component]
-fn albums() -> impl IntoView {
-    view! {
-        <div>
-            <h1>Albums</h1>
         </div>
     }
 }

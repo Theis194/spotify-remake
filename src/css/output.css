@@ -953,6 +953,10 @@ html {
   min-height: 100vh;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -964,6 +968,10 @@ html {
 
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.flex-row {
+  flex-direction: row;
 }
 
 .items-center {
@@ -986,13 +994,30 @@ html {
   border-radius: 0.25rem;
 }
 
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-neutral-content {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-nc,oklch(var(--nc)/var(--tw-border-opacity)));
+}
+
 .bg-neutral {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
 }
 
-.p-10 {
-  padding: 2.5rem;
+.bg-transparent {
+  background-color: transparent;
+}
+
+.p-2 {
+  padding: 0.5rem;
 }
 
 .px-2 {
@@ -1110,19 +1135,6 @@ a:hover .colored_folders {
   -webkit-mask: url(../../public/img/folders.svg) no-repeat center / contain;
 }
 
-.colored_home {
-  background-color: var(--fallback-nc,oklch(var(--nc)/1));
-  /* defines the background color of the image */
-  mask: url(../../public/img/home.svg) no-repeat center / contain;
-  -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
-}
-
-a:hover .colored_home {
-  background-color: var(--fallback-pc,oklch(var(--pc)/1));
-  mask: url(../../public/img/home.svg) no-repeat center / contain;
-  -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
-}
-
 .colored_podcasts {
   background-color: var(--fallback-nc,oklch(var(--nc)/1));
   /* defines the background color of the image */
@@ -1157,14 +1169,45 @@ a:hover .colored_saved {
 }
 
 a:hover .colored_search {
-  background-color: var(--fallback-pc,oklch(var(--pc)/1));
+  background-color: var(--fallback-p,oklch(var(--p)/1));
   mask: url(../../public/img/search.svg) no-repeat center / contain;
   -webkit-mask: url(../../public/img/search.svg) no-repeat center / contain;
+}
+
+.colored_home {
+  background-color: var(--fallback-nc,oklch(var(--nc)/1));
+  /* defines the background color of the image */
+  mask: url(../../public/img/home.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
+}
+
+a:hover .colored_home {
+  background-color: var(--fallback-p,oklch(var(--p)/1));
+  mask: url(../../public/img/home.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
+}
+
+.colored_discover {
+  background-color: var(--fallback-nc,oklch(var(--nc)/1));
+  /* defines the background color of the image */
+  mask: url(../../public/img/discover.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/discover.svg) no-repeat center / contain;
+}
+
+a:hover .colored_discover {
+  background-color: var(--fallback-p,oklch(var(--p)/1));
+  mask: url(../../public/img/discover.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/discover.svg) no-repeat center / contain;
 }
 
 .hover\:bg-primary:hover {
   --tw-bg-opacity: 1;
   background-color: var(--fallback-p,oklch(var(--p)/var(--tw-bg-opacity)));
+}
+
+.hover\:text-primary:hover {
+  --tw-text-opacity: 1;
+  color: var(--fallback-p,oklch(var(--p)/var(--tw-text-opacity)));
 }
 
 .hover\:text-primary-content:hover {

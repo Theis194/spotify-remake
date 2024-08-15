@@ -1,5 +1,7 @@
 mod app;
 mod test;
+mod ui_elements;
+mod pages;
 
 use app::*;
 use test::*;
