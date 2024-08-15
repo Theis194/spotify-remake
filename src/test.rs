@@ -1,12 +1,15 @@
 use leptos::*;
 use wasm_bindgen::prelude::*;
 use leptos_router::*;
+use dotenv::dotenv;
+use std::env;
 
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
 }
+
 
 #[component]
 pub fn Main() -> impl IntoView {
@@ -83,6 +86,14 @@ pub fn Main() -> impl IntoView {
                           
                                 <span>Artists</span>
                             </a>
+                            <a href="/search" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-6">
+                                    <circle cx="12" cy="12" r="3" stroke="#1C274C" stroke-width="1.5" stroke="currentColor" class="size-6"/>
+                                    <path d="M21.9506 13.0004C21.4489 18.0538 17.1853 22.0004 12 22.0004C6.47715 22.0004 2 17.5233 2 12.0004C2 10.179 2.48697 8.4713 3.33782 7.00043M11 2.0498C9.55385 2.19339 8.19833 2.64506 7 3.33825" stroke="#1C274C" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M15 11.9992V2.45703C18.1101 3.43385 20.5654 5.88916 21.5422 8.99923" stroke="#1C274C" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Search</span>
+                            </a>
                         </nav>
                     </div>
 
@@ -92,6 +103,8 @@ pub fn Main() -> impl IntoView {
                             <Route path="/myLibrary" view=myLibrary/>
                             <Route path="/saved" view=Saved/>
                             <Route path="/albums" view=Albums/>
+                            <Route path="/search" view=Search/>
+                            
                         </Routes>
                     </div>
                 </div>
@@ -132,6 +145,20 @@ fn albums() -> impl IntoView {
     view! {
         <div>
             <h1>Albums</h1>
+        </div>
+    }
+}
+
+#[component]
+fn search() -> impl IntoView {
+    
+    dotenv().ok();
+    let token = env::var("SPOITFY_BOT_TOKEN").expect("Expected a token in the environment");
+    
+    
+    view! {
+        <div>
+            <h1>Search</h1> 
         </div>
     }
 }
