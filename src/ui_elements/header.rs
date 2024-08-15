@@ -44,9 +44,9 @@ pub fn Header() -> impl IntoView {
                     <span>Discovery</span>
                 </a>
 
-                <a class="flex items-center transition duration-200 hover:text-primary">
+                <a class="flex items-center transition duration-200 hover:text-primary" href="/search">
                     <div class="colored_search size-6 duration-200"></div>
-                    <input on:input=current_search type="text" class="w-full rounded-lg p-2 bg-transparent" placeholder="Search"/>
+                    <input on:input=current_search type="text" class="w-full rounded-lg p-2 bg-transparent shadow-none focus:bg-neutral" placeholder="Search"/>
                 </a>
             </nav>
         </header>

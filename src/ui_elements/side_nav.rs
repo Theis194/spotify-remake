@@ -46,11 +46,6 @@ pub fn SideNav() -> impl IntoView {
             
                     <span>Artists</span>
                 </a>
-                <a href="/search" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
-                    <div class="colored_search size-6 duration-200"></div>
-
-                    <span>Search</span>
-                </a>
             </nav>
         </div>
     }
