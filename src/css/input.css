@@ -1,3 +1,111 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.colored_library {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/library.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/library.svg) no-repeat center / contain;
+}
+
+a:hover .colored_library {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/library.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/library.svg) no-repeat center / contain;
+}
+
+.colored_albums {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/albums.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/albums.svg) no-repeat center / contain;
+}
+
+a:hover .colored_albums {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/albums.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/albums.svg) no-repeat center / contain;
+}
+
+.colored_artists {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/artists.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/artists.svg) no-repeat center / contain;
+}
+
+a:hover .colored_artists {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/artists.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/artists.svg) no-repeat center / contain;
+}
+
+.colored_audiobooks {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/audiobooks.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/audiobooks.svg) no-repeat center / contain;
+}
+
+a:hover .colored_audiobooks {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/audiobooks.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/audiobooks.svg) no-repeat center / contain;
+}
+
+.colored_folders {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/folders.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/folders.svg) no-repeat center / contain;
+}
+
+a:hover .colored_folders {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/folders.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/folders.svg) no-repeat center / contain;
+}
+
+.colored_home {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/home.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
+}
+
+a:hover .colored_home {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/home.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/home.svg) no-repeat center / contain;
+}
+
+.colored_podcasts {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/podcasts.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/podcasts.svg) no-repeat center / contain;
+}
+
+a:hover .colored_podcasts {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/podcasts.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/podcasts.svg) no-repeat center / contain;
+}
+
+.colored_saved {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/saved.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/saved.svg) no-repeat center / contain;
+}
+
+a:hover .colored_saved {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/saved.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/saved.svg) no-repeat center / contain;
+}
+
+.colored_search {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/search.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/search.svg) no-repeat center / contain;
+}
+
+a:hover .colored_search {
+    background-color: theme('colors.primary-content');
+    mask: url(../../public/img/search.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/search.svg) no-repeat center / contain;
+}

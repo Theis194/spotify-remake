@@ -1,5 +1,8 @@
 {
     "scripts": {
         "build:css": "npx tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch"
+    },
+    "devDependencies": {
+        "daisyui": "^4.12.10"
     }
 }
