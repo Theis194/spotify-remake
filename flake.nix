@@ -21,6 +21,8 @@
             pkgs.cargo-tauri
             pkgs.pkg-config
             pkgs.cargo-tauri
+            pkgs.webkitgtk
+            pkgs.libsoup
           ];
 
           shellHook = ''
@@ -29,7 +31,7 @@
             rustup target add wasm32-unknown-unknown
             cargo install trunk
             cargo install cargo-leptos
-            cargo leptos watch
+            cargo tauri dev
           '';
         };
       });
