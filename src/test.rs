@@ -158,6 +158,8 @@ fn albums() -> impl IntoView {
 #[component]
 fn search() -> impl IntoView {
     
+    dotenv().ok();
+    let token = env::var("SPOITFY_BOT_TOKEN").expect("Expected a token in the environment");
     
     
     view! {
