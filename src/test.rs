@@ -1,8 +1,8 @@
+use ev::MouseEvent;
 use leptos::*;
+use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use leptos_router::*;
-use dotenv::dotenv;
-use std::env;
 
 #[wasm_bindgen]
 extern "C" {
@@ -151,14 +151,23 @@ fn albums() -> impl IntoView {
 
 #[component]
 fn search() -> impl IntoView {
-    
-    dotenv().ok();
-    let token = env::var("SPOITFY_BOT_TOKEN").expect("Expected a token in the environment");
-    
-    
+    let (spotifyToken, setSpotifyToken) = create_signal(String::new());
+
+    let token = move |ev: MouseEvent| {
+        spawn_local(async move {
+            let args = to_value(&()).unwrap();
+
+            let token = invoke("getSpotifyToken", args).await.as_string().unwrap();
+            setSpotifyToken.set(token);
+        });
+    };
+
+
     view! {
         <div>
-            <h1>Search</h1> 
+            <h1>Search</h1>
+            <button on:click=token>Get Spotify Token</button>
+            <h2>{move || format!("Spotify token: {}", spotifyToken.get())}</h2>
         </div>
     }
 }
