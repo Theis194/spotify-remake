@@ -16,10 +16,17 @@ fn test(name: &str) -> String {
 }
 
 #[tauri::command]
-fn getSpotifyToken() -> String {
+fn getSpotifyClient() -> String {
     println!("Getting Spotify token");
-    dotenv().ok();
-    let token = env::var("SPOTIFY_API_TOKEN").expect("SPOTIFY_API_TOKEN must be set");
+    let token = env::var("CLIENT_ID").expect("CLIENT_ID must be set");
+
+    token
+}
+
+#[tauri::command]
+fn getSpotifySecret() -> String {
+    println!("Getting Spotify token");
+    let token = env::var("CLIENT_SECRET").expect("CLIENT_SECRET must be set");
 
     token
 }
@@ -30,8 +37,9 @@ fn current_search(current: &str) {
 }
 
 fn main() {
+    dotenv().ok();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test, getSpotifyToken, current_search])
+        .invoke_handler(tauri::generate_handler![greet, test, getSpotifyClient, getSpotifySecret, current_search])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

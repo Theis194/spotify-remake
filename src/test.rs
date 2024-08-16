@@ -52,25 +52,29 @@ pub fn Main() -> impl IntoView {
     }
 }
 
+
 #[component]
 fn search() -> impl IntoView {
-    let (spotifyToken, setSpotifyToken) = create_signal(String::new());
+    let (spotifyClientID, setSpotifyClientID) = create_signal(String::new());
+    let (spotifySecret, setSpotifySecret) = create_signal(String::new());
 
-    let token = move |ev: MouseEvent| {
+    create_effect(move |_| {
         spawn_local(async move {
             let args = to_value(&()).unwrap();
 
-            let token = invoke("getSpotifyToken", args).await.as_string().unwrap();
-            setSpotifyToken.set(token);
-        });
-    };
+            let clientID = invoke("getSpotifyClient", args.clone()).await.as_string().unwrap();
+            setSpotifyClientID.set(clientID);
 
+            let secret = invoke("getSpotifySecret", args.clone()).await.as_string().unwrap();
+            setSpotifySecret.set(secret);
+        });
+    });
 
     view! {
         <div>
             <h1>Search</h1>
-            <button on:click=token>Get Spotify Token</button>
-            <h2>{move || format!("Spotify token: {}", spotifyToken.get())}</h2>
+            <h2>{move || format!("Spotify Client ID: {}", spotifyClientID.get())}</h2>
+            <h2>{move || format!("Spotify Secret: {}", spotifySecret.get())}</h2>
         </div>
     }
 }
