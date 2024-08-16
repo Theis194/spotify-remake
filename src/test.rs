@@ -21,13 +21,13 @@ pub fn Main() -> impl IntoView {
     view! {
         <div>
             <Router>
-                <div class="relative min-h-screen md:flex">
+                <div class="relative min-h-screen flex">
                     <SideNav/>
 
-                    <div class="flex-1 text-2xl font-bold px-2">
+                    <div class="flex-1 w-full text-2xl font-bold px-2">
                         <Header/>
 
-                        <div class="flex-1 border border-neutral-content rounded px-2 py-2">
+                        <div class="border border-neutral-content rounded px-2 py-2">
                             <Routes>
                                 <Route path="/" view=Home/>
                                 <Route path="/myLibrary" view=MyLibrary/>
