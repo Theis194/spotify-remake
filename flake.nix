@@ -23,6 +23,7 @@
             pkgs.cargo-tauri
             pkgs.webkitgtk
             pkgs.libsoup
+            pkgs.git
           ];
 
           shellHook = ''
