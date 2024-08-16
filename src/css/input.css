@@ -121,3 +121,39 @@ a:hover .colored_discover {
     mask: url(../../public/img/discover.svg) no-repeat center / contain;
     -webkit-mask: url(../../public/img/discover.svg) no-repeat center / contain;
 }
+
+.colored_settings {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/settings.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/settings.svg) no-repeat center / contain;
+}
+
+a:hover .colored_settings {
+    background-color: theme('colors.primary');
+    mask: url(../../public/img/settings.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/settings.svg) no-repeat center / contain;
+}
+
+.colored_friends {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/friends.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/friends.svg) no-repeat center / contain;
+}
+
+.colored_friends:hover {
+    background-color: theme('colors.primary');
+    mask: url(../../public/img/friends.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/friends.svg) no-repeat center / contain;
+}
+
+.colored_notifications {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/notifications.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/notifications.svg) no-repeat center / contain;
+}
+
+.colored_notifications:hover {
+    background-color: theme('colors.primary');
+    mask: url(../../public/img/notifications.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/notifications.svg) no-repeat center / contain;
+}

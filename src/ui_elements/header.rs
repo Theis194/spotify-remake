@@ -30,24 +30,43 @@ pub fn Header() -> impl IntoView {
     };
 
     view! {
-        <header class="py-2">
-            <nav class="flex flex-row">
-                <a class="flex items-center px-2 transition duration-200 hover:text-primary" href="/">
-                    <div class="colored_home size-6 duration-200">test</div>
+        <header class="py-2 flex flex-row">
+            <nav class="w-full flex justify-between">
+                <div class="flex">
+                    <a class="flex items-center px-2 transition duration-200 hover:text-primary" href="/">
+                        <div class="colored_home size-6 duration-200">test</div>
 
-                    <span>Home</span>
-                </a>
+                        <span>Home</span>
+                    </a>
 
-                <a class="flex items-center px-2 transition duration-200 hover:text-primary" href="/discovery">
-                    <div class="colored_discover size-6 duration-200">test</div>
+                    <a class="flex items-center px-2 transition duration-200 hover:text-primary" href="/discovery">
+                        <div class="colored_discover size-6 duration-200">test</div>
 
-                    <span>Discovery</span>
-                </a>
+                        <span>Discovery</span>
+                    </a>
 
-                <a class="flex items-center transition duration-200 hover:text-primary" href="/search">
-                    <div class="colored_search size-6 duration-200"></div>
-                    <input on:input=current_search type="text" class="w-full rounded-lg p-2 bg-transparent shadow-none focus:bg-neutral" placeholder="Search"/>
-                </a>
+                    <a class="flex items-center transition duration-200 hover:text-primary" href="/search">
+                        <div class="colored_search size-6 duration-200"></div>
+                        <input on:input=current_search type="text" class="w-full rounded-lg p-2 bg-transparent shadow-none focus:bg-neutral" placeholder="Search"/>
+                    </a>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="colored_notifications size-6 px-4"></div>
+                    <div class="colored_friends size-6 px-4"></div>
+                    <a href="/settings">
+                        <div class="colored_settings size-6 px-4"></div>
+                    </a>
+                    <div class="dropdown dropdown-end size-6">
+                        <img alt="Profile picture" src="./public/img/profile_pic.png" tabindex="0" role="button" class="object-cover rounded-full size-6"/>
+                        <ul
+                          tabindex="0"
+                          class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+                            <li><a>Item 1</a></li>
+                            <li><a>Item 2</a></li>
+                        </ul>
+                    </div>
+                </div>
             </nav>
         </header>
     }
