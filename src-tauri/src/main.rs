@@ -7,6 +7,10 @@ use dotenv::dotenv;
 use std::env;
 
 use crate::util::{
+    spotify::{
+        get_authorization_url,
+        get_auth_key,
+    },
     config::Config
 };
 
@@ -21,6 +25,26 @@ fn test(name: &str) -> String {
     format!("Hello, {}!", name)
 }
 
+#[tauri::command]
+fn authorize() -> String {
+    let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
+    let redirect_uri = "http://localhost:1420/";
+    let auth_url = get_authorization_url(&client_id, redirect_uri);
+
+    auth_url
+}
+
+#[tauri::command]
+fn exchange_code(code: &str) {
+    let _ = Config::new()
+        .set_filename("config".to_string())
+        .read()
+        .expect("Failed to read config")
+        .set("auth_code".to_string(), code.to_string())
+        .write();
+
+    /* let auth_key = get_auth_key(code); */
+}
 
 #[tauri::command]
 fn current_search(current: &str) {
@@ -36,7 +60,7 @@ fn main() {
 
     dotenv().ok();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test, current_search])
+        .invoke_handler(tauri::generate_handler![greet, test, authorize, exchange_code, current_search])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,10 +1,14 @@
 use reqwest::header::CONTENT_TYPE;
+use reqwest::Client;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::error::Error;
 use std::env;
 use chrono::prelude::*;
 
+use rand::Rng;
+use sha2::{Digest, Sha256};
+use base64::{encode_config, URL_SAFE_NO_PAD};
 use super::config::*;
 
 #[derive(Deserialize)]
@@ -14,6 +18,51 @@ struct AuthResponse {
     expires_in: i64,
 }
 
+pub async fn exchange_code_for_token(client_id: &str, client_secret: &str, code: &str, redirect_uri: &str, code_verifier: &str) -> Result<AuthResponse, Box<dyn Error>> {
+    let params = [
+        ("grant_type", "authorization_code"),
+        ("code", code),
+        ("redirect_uri", redirect_uri),
+        ("client_id", client_id),
+        ("code_verifier", code_verifier),
+    ];
+
+    let client = Client::new();
+    let response = client
+        .post("https://accounts.spotify.com/api/token")
+        .form(&params)
+        .send()
+        .await?;
+
+    let auth_response: AuthResponse = response.json().await?;
+    Ok(auth_response)
+}
+
+pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
+    let code_verifier = generate_code_verifier();
+    let code_challenge = generate_code_challenge(&code_verifier);
+
+    format!(
+        "https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope=user-read-private%20user-read-email&redirect_uri={}&code_challenge_method=S256&code_challenge={}",
+        client_id, redirect_uri, code_challenge
+    )
+}
+
+fn generate_code_verifier() -> String {
+    let verifier: String = rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(128)
+        .map(char::from)
+        .collect();
+    verifier
+}
+
+fn generate_code_challenge(verifier: &str) -> String {
+    let hash = Sha256::digest(verifier.as_bytes());
+    encode_config(&hash, URL_SAFE_NO_PAD)
+}
+
+// Anything below here might be deprecated
 pub async fn get_auth_key() -> Result<String, Box<dyn Error>> {
     let mut config = Config::new()
         .set_filename("config".to_string())

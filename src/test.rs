@@ -1,5 +1,9 @@
+use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
 use leptos_router::*;
+use serde_wasm_bindgen::to_value;
+use wasm_bindgen::prelude::*;
+use web_sys::HtmlInputElement;
 
 use crate::{
     ui_elements::{
@@ -15,6 +19,11 @@ use crate::{
     },
 };
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
+    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+}
 
 #[component]
 pub fn Main() -> impl IntoView {
@@ -34,12 +43,38 @@ pub fn Main() -> impl IntoView {
                                 <Route path="/saved" view=Saved/>
                                 <Route path="/albums" view=Albums/>
                                 <Route path="/search" view=Search/>
-                                
                             </Routes>
+
+                            </div>
                         </div>
-                    </div>
+                    <Modal/>
                 </div>
             </Router>
         </div>
+    }
+}
+
+
+fn Modal() -> impl IntoView {
+    let authorize = move |ev: SubmitEvent| {
+        ev.prevent_default();
+        
+        spawn_local(async move {
+            let auth_url = invoke("authorize", to_value(&()).unwrap()).await.as_string().unwrap();
+
+            web_sys::window().unwrap().location().set_href(&auth_url).unwrap();
+        });
+    };
+
+    view! {
+        <dialog id="my_modal_3" class="modal">
+            <div class="modal-box">
+                <h3>{"Authorize your Account!"}</h3>
+
+                <form on:submit=authorize>
+                    <button type="submit" class="btn btn-primary">Authorize</button>
+                </form>
+            </div>
+        </dialog>
     }
 }

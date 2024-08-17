@@ -64,6 +64,11 @@ pub fn Header() -> impl IntoView {
                           class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
                             <li><a>Item 1</a></li>
                             <li><a>Item 2</a></li>
+                            <li>
+                                <button onclick="my_modal_3.showModal()">
+                                    Log In
+                                </button>
+                            </li>
                         </ul>
                     </div>
                 </div>
