@@ -65,7 +65,7 @@ pub fn Search() -> impl IntoView {
                 </div>
             </div>
                 
-            <div>
+            <div class="flex-1">
                 <h2>Songs</h2>
                 
                 <div>
