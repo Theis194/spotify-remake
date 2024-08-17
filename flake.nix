@@ -24,6 +24,7 @@
             pkgs.webkitgtk
             pkgs.libsoup
             pkgs.git
+            pkgs.openssl
           ];
 
           shellHook = ''
