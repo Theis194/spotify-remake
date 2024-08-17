@@ -7,7 +7,6 @@ use dotenv::dotenv;
 use std::env;
 
 use crate::util::{
-    spotify::get_auth_key, 
     config::Config
 };
 
@@ -22,24 +21,6 @@ fn test(name: &str) -> String {
     format!("Hello, {}!", name)
 }
 
-#[tauri::command]
-async fn getSpotifyClient() -> String {
-    let auth_key = get_auth_key().await.unwrap();
-
-    println!("Auth key: {}", auth_key);
-    println!("Getting Spotify token");
-    let token = env::var("CLIENT_ID").expect("CLIENT_ID must be set");
-
-    token
-}
-
-#[tauri::command]
-fn getSpotifySecret() -> String {
-    println!("Getting Spotify token");
-    let token = env::var("CLIENT_SECRET").expect("CLIENT_SECRET must be set");
-
-    token
-}
 
 #[tauri::command]
 fn current_search(current: &str) {
@@ -55,7 +36,7 @@ fn main() {
 
     dotenv().ok();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test, getSpotifyClient, getSpotifySecret, current_search])
+        .invoke_handler(tauri::generate_handler![greet, test, current_search])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

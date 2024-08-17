@@ -1,3 +1,5 @@
+#[warn(non_snake_case)]
+
 mod app;
 mod test;
 mod ui_elements;

@@ -22,13 +22,8 @@ pub fn Search() -> impl IntoView {
 
     create_effect(move |_| {
         spawn_local(async move {
-            let args = to_value(&()).unwrap();
+            // let args = to_value(&()).unwrap();
 
-            let clientID = invoke("getSpotifyClient", args.clone()).await.as_string().unwrap();
-            setSpotifyClientID.set(clientID);
-
-            let secret = invoke("getSpotifySecret", args.clone()).await.as_string().unwrap();
-            setSpotifySecret.set(secret);
         });
     });
 
@@ -79,18 +74,12 @@ pub fn Search() -> impl IntoView {
                         .collect::<Vec<_>>()}
                 </div>
               
-                <div class="flex-1 w-full p-4">
-                    <h2 class="break-all">{move || format!("Spotify Client ID: {}", spotifyClientID.get())}</h2>
-                    <h2 class="break-all">{move || format!("Spotify Secret: {}", spotifySecret.get())}</h2>
-                </div>
             </div>
         </div>
     }
 }
 
 fn song_list_item(song: Song) -> impl IntoView {
-    let min = song.duration / 60;
-    let sec = song.duration % 60;
 
     view! {
         <div class="flex justify-between items-center bg-base-100 rounded px-2 py-2 hover:bg-neutral">
