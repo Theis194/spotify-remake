@@ -48,7 +48,7 @@ fn current_search(current: &str) {
 
 fn main() {
     let _ = Config::new()
-        .set_filename("config".to_string())
+        .try_read("config".to_string()).expect("Failed to read config")
         .set_if_not_exists("auth_key".to_string(), "".to_string())
         .set_if_not_exists("auth_key_expire".to_string(), "".to_string())
         .write();

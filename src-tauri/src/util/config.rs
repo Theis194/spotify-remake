@@ -67,6 +67,15 @@ impl Config {
         Ok(config)
     }
 
+    pub fn try_read(&self, file_name: String) -> Result<Config, Box<dyn Error>> {
+        if !config_exists(file_name.clone()) {
+            return Ok(Config::new().set_filename(file_name))
+        }
+        let contents = fs::read_to_string(format!("src/config/{}.json", file_name)).expect("Something went wrong reading the file");
+        let config: Config = serde_json::from_str(&contents).expect("Error parsing JSON");
+        Ok(config)
+    } 
+
     pub fn write(&self) -> Result<(), Box<dyn Error>> {
         if self.file_name == "" {
             return Err("File name not set".into());
