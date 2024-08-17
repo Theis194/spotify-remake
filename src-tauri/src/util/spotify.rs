@@ -12,13 +12,15 @@ use base64::{encode_config, URL_SAFE_NO_PAD};
 use super::config::*;
 
 #[derive(Deserialize)]
-struct AuthResponse {
-    access_token: String,
-    token_type: String,
-    expires_in: i64,
+pub struct AuthResponse {
+    pub access_token: String,
+    pub token_type: String,
+    pub scope: String,
+    pub expires_in: i64,
+    pub refresh_token: Option<String>,
 }
 
-pub async fn exchange_code_for_token(client_id: &str, client_secret: &str, code: &str, redirect_uri: &str, code_verifier: &str) -> Result<AuthResponse, Box<dyn Error>> {
+pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: &str, code_verifier: &str) -> Result<AuthResponse, Box<dyn Error>> {
     let params = [
         ("grant_type", "authorization_code"),
         ("code", code),
@@ -30,6 +32,7 @@ pub async fn exchange_code_for_token(client_id: &str, client_secret: &str, code:
     let client = Client::new();
     let response = client
         .post("https://accounts.spotify.com/api/token")
+        .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .form(&params)
         .send()
         .await?;
@@ -41,6 +44,13 @@ pub async fn exchange_code_for_token(client_id: &str, client_secret: &str, code:
 pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
     let code_verifier = generate_code_verifier();
     let code_challenge = generate_code_challenge(&code_verifier);
+
+    let _ = Config::new()
+        .set_filename("config".to_string())
+        .read()
+        .expect("Failed to read config")
+        .set("code_verifier".to_string(), code_verifier)
+        .write();
 
     format!(
         "https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope=user-read-private%20user-read-email&redirect_uri={}&code_challenge_method=S256&code_challenge={}",

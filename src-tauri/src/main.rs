@@ -5,14 +5,31 @@ mod util;
 
 use dotenv::dotenv;
 use std::env;
+use chrono::prelude::*;
+use serde::Serialize;
+use thiserror::Error;
 
 use crate::util::{
     spotify::{
         get_authorization_url,
-        get_auth_key,
+        exchange_code_for_token,
+        AuthResponse
     },
     config::Config
 };
+
+// Tauri does not like returnng erros that are not serializable
+#[derive(Error, Debug, Serialize)]
+pub enum MyError {
+    #[error("Environment variable {0} not found")]
+    EnvVarNotFound(String),
+
+    #[error("Authorization error: {0}")]
+    AuthorizationError(String),
+
+    #[error("Unknown error")]
+    Unknown,
+}
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -35,15 +52,38 @@ fn authorize() -> String {
 }
 
 #[tauri::command]
-fn exchange_code(code: &str) {
+async fn exchange_code(code: &str) -> Result<(), MyError> {
     let _ = Config::new()
         .set_filename("config".to_string())
         .read()
         .expect("Failed to read config")
         .set("auth_code".to_string(), code.to_string())
-        .write();
+        .write()
+        .expect("Failed to write config");
 
-    /* let auth_key = get_auth_key(code); */
+    let mut config = Config::new()
+        .set_filename("config".to_string())
+        .read()
+        .expect("Failed to read config");
+
+    let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
+    let code_verifier = config.get("code_verifier").unwrap();
+    let redirect_uri = "http://localhost:1420/";
+
+    let auth_token: AuthResponse = exchange_code_for_token(&client_id, code, redirect_uri, &code_verifier).await.unwrap();
+
+    let auth_token_expires = Utc::now() + chrono::Duration::seconds(auth_token.expires_in);
+
+    config
+        .set("auth_token".to_string(), auth_token.access_token)
+        .set("auth_token_type".to_string(), auth_token.token_type)
+        .set("auth_token_scope".to_string(), auth_token.scope)
+        .set("auth_token_expires".to_string(), auth_token_expires.to_rfc3339())
+        .set("auth_token_refresh".to_string(), auth_token.refresh_token.unwrap_or("".to_string()))
+        .write()
+        .expect("Failed to write config");
+
+    Ok(())
 }
 
 #[tauri::command]
