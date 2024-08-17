@@ -55,7 +55,7 @@ pub async fn get_auth_key() -> Result<String, Box<dyn Error>> {
     return Ok(config.get("auth_key").unwrap().to_string());
 }
 
-async fn get_new_auth_key() -> Result<String, Box<dyn Error>> {
+async fn request_auth_key() -> Result<String, Box<dyn Error>> {
     let client = reqwest::Client::new();
 
     let client_id = env::var("CLIENT_ID").expect("CLIENT_ID must be set");
@@ -86,7 +86,7 @@ async fn update_auth_key(mut config: Config) -> Result<Config, Box<dyn Error>> {
     let current_time = Utc::now();
     let expire_time = current_time + chrono::Duration::minutes(60);
 
-    let new_auth_key = match get_new_auth_key().await {
+    let new_auth_key = match request_auth_key().await {
         Ok(key) => key,
         Err(e) => { return Err(e.into());} 
     };
