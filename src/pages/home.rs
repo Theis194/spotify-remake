@@ -2,10 +2,7 @@ use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use leptos::*;
-use web_sys::{
-    window,
-    HtmlDialogElement,
-};
+use web_sys::window;
 use url::Url;
 use crate::pages::page_util::authorized::is_authorized;
 

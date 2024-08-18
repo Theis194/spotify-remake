@@ -18,17 +18,6 @@ use crate::util::{
     config::Config
 };
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-#[tauri::command]
-fn test(name: &str) -> String {
-    format!("Hello, {}!", name)
-}
-
 #[tauri::command]
 fn is_user_authorized() -> bool {
     let config = Config::new()
@@ -90,7 +79,7 @@ async fn main() {
 
     dotenv().ok();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, test, authorize, exchange_code, current_search, is_user_authorized])
+        .invoke_handler(tauri::generate_handler![authorize, exchange_code, current_search, is_user_authorized])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

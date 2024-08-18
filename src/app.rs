@@ -1,6 +1,5 @@
 use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
-use leptos::leptos_dom::helpers::window_event_listener;
 use leptos_router::*;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;

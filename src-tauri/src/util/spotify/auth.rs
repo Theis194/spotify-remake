@@ -1,7 +1,6 @@
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
 use serde::Deserialize;
-use std::collections::HashMap;
 use std::error::Error;
 use std::env;
 use chrono::prelude::*;

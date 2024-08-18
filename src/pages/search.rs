@@ -1,5 +1,4 @@
 use leptos::*;
-use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -17,8 +16,8 @@ struct Song {
 
 #[component]
 pub fn Search() -> impl IntoView {
-    let (spotifyClientID, setSpotifyClientID) = create_signal(String::new());
-    let (spotifySecret, setSpotifySecret) = create_signal(String::new());
+    //let (spotifyClientID, setSpotifyClientID) = create_signal(String::new());
+    //let (spotifySecret, setSpotifySecret) = create_signal(String::new());
 
     create_effect(move |_| {
         spawn_local(async move {
