@@ -1,8 +1,23 @@
 use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
-use serde::{Deserialize, Serialize};
+use leptos::leptos_dom::helpers::window_event_listener;
+use leptos_router::*;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
+
+use crate::{
+    ui_elements::{
+        side_nav::SideNav,
+        header::Header,
+    },
+    pages::{
+        my_library::MyLibrary,
+        home::Home,
+        saved::Saved,
+        albums::Albums,
+        search::Search,
+    },
+};
 
 #[wasm_bindgen]
 extern "C" {
@@ -10,63 +25,56 @@ extern "C" {
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
 }
 
-#[derive(Serialize, Deserialize)]
-struct GreetArgs<'a> {
-    name: &'a str,
-}
-
 #[component]
 pub fn App() -> impl IntoView {
-    let (name, set_name) = create_signal(String::new());
-    let (greet_msg, set_greet_msg) = create_signal(String::new());
-    let (test_msg, set_test_msg) = create_signal(String::new());
+    view! {
+        <div>
+            <Router>
+                <div class="relative min-h-screen flex">
+                    <SideNav/>
 
-    let update_name = move |ev| {
-        let v = event_target_value(&ev);
-        set_name.set(v);
-    };
+                    <div class="flex flex-col w-full text-2xl font-bold px-2 h-screen">
+                        <Header/>
 
-    let greet = move |ev: SubmitEvent| {
+                        <div class="flex-1 border border-neutral-content rounded px-2 py-2">
+                            <Routes>
+                                <Route path="/" view=Home/>
+                                <Route path="/myLibrary" view=MyLibrary/>
+                                <Route path="/saved" view=Saved/>
+                                <Route path="/albums" view=Albums/>
+                                <Route path="/search" view=Search/>
+                            </Routes>
+
+                            </div>
+                        </div>
+                    <Modal/>
+                </div>
+            </Router>
+        </div>
+    }
+}
+
+
+fn Modal() -> impl IntoView {
+    let authorize = move |ev: SubmitEvent| {
         ev.prevent_default();
+        
         spawn_local(async move {
-            let name = name.get_untracked();
-            if name.is_empty() {
-                return;
-            }
+            let auth_url = invoke("authorize", to_value(&()).unwrap()).await.as_string().unwrap();
 
-            let args = to_value(&GreetArgs { name: &name }).unwrap();
-            // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-            let new_msg = invoke("greet", args.clone()).await.as_string().unwrap();
-            set_greet_msg.set(new_msg);
-
-            let test = invoke("test", args).await.as_string().unwrap();
-            set_test_msg.set(test);
+            web_sys::window().unwrap().location().set_href(&auth_url).unwrap();
         });
     };
 
     view! {
-        <main class="container">
-            <div class="row">
-                <a href="https://tauri.app" target="_blank">
-                    <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                </a>
-                <a href="https://docs.rs/leptos/" target="_blank">
-                    <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
-                </a>
+        <div id="authorize_modal" class="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-40 py-10">
+            <div class="flex modal-box items-center flex-col gap-4">
+                <h1>{"Authorize your account to use the app"}</h1>
+
+                <form on:submit=authorize>
+                    <button type="submit" class="btn btn-primary">Authorize</button>
+                </form>
             </div>
-
-            <p>"Click on the Tauri and Leptos logos to learn more."</p>
-
-            <form class="row" on:submit=greet>
-                <input
-                    id="greet-input"
-                    placeholder="Enter a name..."
-                    on:input=update_name
-                />
-                <button type="submit">"Greet"</button>
-            </form>
-
-            <p><b>{ move || format!("message one: {} \r\n message two: {}", greet_msg.get(), test_msg.get()) }</b></p>
-        </main>
+        </div>
     }
 }
