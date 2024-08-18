@@ -76,7 +76,7 @@ impl Config {
         Ok(config)
     } 
 
-    pub fn write(&self) -> Result<(), Box<dyn Error>> {
+    pub fn write(&self) -> Result<Config, Box<dyn Error>> {
         if self.file_name == "" {
             return Err("File name not set".into());
         }
@@ -88,6 +88,6 @@ impl Config {
         let json = serde_json::to_string(&self).expect("Error serializing JSON");
         fs::write(format!("src/config/{}.json", self.file_name), json).expect("Error writing file");
 
-        Ok(())
+        Ok(self.clone())
     }
 }

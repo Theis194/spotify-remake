@@ -10,7 +10,7 @@ use serde::Serialize;
 use thiserror::Error;
 
 use crate::util::{
-    spotify::{
+    spotify::auth::{
         get_authorization_url,
         exchange_code_for_token,
         AuthResponse
@@ -53,18 +53,13 @@ fn authorize() -> String {
 
 #[tauri::command]
 async fn exchange_code(code: &str) -> Result<(), MyError> {
-    let _ = Config::new()
+    let mut config = Config::new()
         .set_filename("config".to_string())
         .read()
         .expect("Failed to read config")
         .set("auth_code".to_string(), code.to_string())
         .write()
         .expect("Failed to write config");
-
-    let mut config = Config::new()
-        .set_filename("config".to_string())
-        .read()
-        .expect("Failed to read config");
 
     let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
     let code_verifier = config.get("code_verifier").unwrap();
@@ -94,8 +89,11 @@ fn current_search(current: &str) {
 fn main() {
     let _ = Config::new()
         .try_read("config".to_string()).expect("Failed to read config")
-        .set_if_not_exists("auth_key".to_string(), "".to_string())
-        .set_if_not_exists("auth_key_expire".to_string(), "".to_string())
+        .set_if_not_exists("auth_token".to_string(), "".to_string())
+        .set_if_not_exists("auth_token_type".to_string(), "".to_string())
+        .set_if_not_exists("auth_token_scope".to_string(), "".to_string())
+        .set_if_not_exists("auth_token_expires".to_string(), "".to_string())
+        .set_if_not_exists("auth_token_refresh".to_string(), "".to_string())
         .write();
 
     dotenv().ok();

@@ -9,7 +9,7 @@ use chrono::prelude::*;
 use rand::Rng;
 use sha2::{Digest, Sha256};
 use base64::{encode_config, URL_SAFE_NO_PAD};
-use super::config::*;
+use crate::util::config::Config;
 
 #[derive(Deserialize)]
 pub struct AuthResponse {
@@ -72,7 +72,8 @@ fn generate_code_challenge(verifier: &str) -> String {
     encode_config(&hash, URL_SAFE_NO_PAD)
 }
 
-// Anything below here might be deprecated
+// Remake these using the users auth token
+// Anything below here is deprecated
 pub async fn get_auth_key() -> Result<String, Box<dyn Error>> {
     let mut config = Config::new()
         .set_filename("config".to_string())
