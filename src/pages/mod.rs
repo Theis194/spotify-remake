@@ -3,3 +3,5 @@ pub mod home;
 pub mod saved;
 pub mod albums;
 pub mod search;
+
+pub mod page_util;

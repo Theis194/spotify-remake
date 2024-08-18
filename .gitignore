@@ -1,7 +1,7 @@
 /dist/
 /target/
 /Cargo.lock
-/src-tauri/src/config/config.json
+/src-tauri/src/config/*.json
 =
 .env
 .idea/workspace.xml

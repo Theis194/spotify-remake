@@ -1,9 +1,9 @@
 use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
+use leptos::leptos_dom::helpers::window_event_listener;
 use leptos_router::*;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
-use web_sys::HtmlInputElement;
 
 use crate::{
     ui_elements::{
@@ -67,14 +67,14 @@ fn Modal() -> impl IntoView {
     };
 
     view! {
-        <dialog id="my_modal_3" class="modal">
-            <div class="modal-box">
-                <h3>{"Authorize your Account!"}</h3>
+        <div id="authorize_modal" class="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-40 py-10">
+            <div class="flex modal-box items-center flex-col gap-4">
+                <h1>{"Authorize your account to use the app"}</h1>
 
                 <form on:submit=authorize>
                     <button type="submit" class="btn btn-primary">Authorize</button>
                 </form>
             </div>
-        </dialog>
+        </div>
     }
 }
