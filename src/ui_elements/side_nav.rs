@@ -35,7 +35,7 @@ pub fn SideNav() -> impl IntoView {
                     <span>Podcasts</span>
                 </a>
 
-                <a href="/Audiobooks" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
+                <a href="/audiobooks" class="flex items-center space-x-2 block py-2.5 px-4 rounded transition duration-200 hover:bg-primary hover:text-primary-content">
                     <div class="colored_audiobooks size-6 duration-200"></div>
 
                     <span>Audiobooks</span>

@@ -77,9 +77,10 @@ fn current_search(current: &str) {
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+    
     setup().await;
 
-    dotenv().ok();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![authorize, exchange_code, current_search, is_user_authorized])
         .run(tauri::generate_context!())
