@@ -35,6 +35,7 @@
             rustup target add wasm32-unknown-unknown
             cargo install trunk
             cargo install cargo-leptos
+            export GIO_MODULE_DIR=/nix/store/j9wkqd90c3kd7xrwyqg1imfj20l62k65-glib-networking-2.80.0/lib/gio/modules/
             cargo tauri dev
           '';
         };
