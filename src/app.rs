@@ -15,6 +15,10 @@ use crate::{
         saved::Saved,
         albums::Albums,
         search::Search,
+        audiobooks::Audiobooks,
+        artists::Artists,
+        folders::Folders,
+        podcasts::Podcasts,
     },
 };
 
@@ -42,6 +46,10 @@ pub fn App() -> impl IntoView {
                                 <Route path="/saved" view=Saved/>
                                 <Route path="/albums" view=Albums/>
                                 <Route path="/search" view=Search/>
+                                <Route path="/artists" view=Artists/>
+                                <Route path="/audiobooks" view=Audiobooks/>
+                                <Route path="/folders" view=Folders/>
+                                <Route path="/podcasts" view=Podcasts/>
                             </Routes>
 
                             </div>
