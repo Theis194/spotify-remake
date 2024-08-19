@@ -25,6 +25,8 @@ fn is_user_authorized() -> bool {
 
     let user_is_authorized = config.get("user_is_authorized").expect("user_is_authorized has no value").parse::<bool>().expect("Failed to parse user_is_authorized");
 
+    println!("User is authorized: {}", user_is_authorized);
+
     user_is_authorized
 }
 
@@ -111,6 +113,7 @@ async fn setup() {
         let now = Utc::now();
 
         if now > auth_token_expires {
+            println!("Token expired, refreshing...");
             refresh_auth_token().await.expect("Failed to refresh auth token");
         }
     }

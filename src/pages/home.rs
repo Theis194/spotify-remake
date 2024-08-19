@@ -20,6 +20,7 @@ struct Code <'a> {
 #[component]
 pub fn Home() -> impl IntoView {
     let query_params = get_query_params();
+    let mut spotify_redirect: bool = false;
 
     if let Some(query_params) = query_params {
         for (key, value) in query_params {
@@ -28,13 +29,17 @@ pub fn Home() -> impl IntoView {
                     code: &value,
                 }).unwrap();
                 spawn_local(async move {
+                    spotify_redirect = true;
                     invoke("exchange_code", args).await;
+                    is_authorized()
                 });
             }
         }
     }
     
-    is_authorized();
+    if !spotify_redirect {
+        is_authorized();
+    }
 
     view! {
         <div>

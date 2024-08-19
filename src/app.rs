@@ -53,26 +53,20 @@ pub fn App() -> impl IntoView {
     }
 }
 
-
 fn Modal() -> impl IntoView {
-    let authorize = move |ev: SubmitEvent| {
-        ev.prevent_default();
-        
-        spawn_local(async move {
-            let auth_url = invoke("authorize", to_value(&()).unwrap()).await.as_string().unwrap();
+    let (spotify_url, set_spotify_url) = create_signal(String::new());
 
-            web_sys::window().unwrap().location().set_href(&auth_url).unwrap();
-        });
-    };
+    spawn_local(async move {
+        let url = invoke("authorize", to_value(&()).unwrap()).await.as_string().unwrap();
+        set_spotify_url.set(url);
+    });
 
     view! {
         <div id="authorize_modal" class="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-40 py-10">
             <div class="flex modal-box items-center flex-col gap-4">
                 <h1>{"Authorize your account to use the app"}</h1>
 
-                <form on:submit=authorize>
-                    <button type="submit" class="btn btn-primary">Authorize</button>
-                </form>
+                <a class="btn btn-primary hover:text-primary-content" href={move || spotify_url.get()}>Authorize</a>
             </div>
         </div>
     }
