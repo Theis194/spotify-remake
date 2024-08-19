@@ -9,7 +9,10 @@ use rand::Rng;
 use sha2::{Digest, Sha256};
 use base64::{encode_config, URL_SAFE_NO_PAD};
 use crate::util::{
-    config::Config,
+    config::{
+        Config,
+        Value,
+    },
     spotify_bb_error::BbError
 };
 
@@ -51,7 +54,7 @@ pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
         .set_filename("cache".to_string())
         .read()
         .expect("Failed to read config")
-        .set("code_verifier".to_string(), code_verifier)
+        .set("code_verifier".to_string(), Value::String(code_verifier))
         .write();
 
     format!(
@@ -81,7 +84,7 @@ pub async fn refresh_auth_token() -> Result<(), BbError> {
         .expect("Failed to read config");
 
     let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
-    let refresh_token = config.get("auth_token_refresh").unwrap();
+    let refresh_token = config.get("auth_token_refresh").expect("auth_token_refresh has no value").get_string().expect("Failed to get auth_token_refresh as string");
 
     let params = [
         ("grant_type", "refresh_token"),
@@ -103,11 +106,11 @@ pub async fn refresh_auth_token() -> Result<(), BbError> {
     let auth_token_expires = Utc::now() + chrono::Duration::seconds(auth_response.expires_in);
 
     config
-        .set("auth_token".to_string(), auth_response.access_token)
-        .set("auth_token_type".to_string(), auth_response.token_type)
-        .set("auth_token_scope".to_string(), auth_response.scope)
-        .set("auth_token_expires".to_string(), auth_token_expires.to_rfc3339())
-        .set("auth_token_refresh".to_string(), auth_response.refresh_token.unwrap_or("".to_string()))
+        .set("auth_token".to_string(), Value::String(auth_response.access_token) )
+        .set("auth_token_type".to_string(), Value::String(auth_response.token_type))
+        .set("auth_token_scope".to_string(), Value::String(auth_response.scope))
+        .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
+        .set("auth_token_refresh".to_string(), Value::String(auth_response.refresh_token.unwrap_or("".to_string())))
         .write()
         .expect("Failed to write config");
 

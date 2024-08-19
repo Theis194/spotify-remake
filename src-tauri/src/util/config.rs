@@ -2,23 +2,13 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
+use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Config {
-    settings: HashMap<String, String>,
+    settings: HashMap<String, Value>,
     file_name: String,
 }
-
-fn config_exists(file_name: String) -> bool {
-    fs::metadata(format!("src/config/{}.json", file_name)).is_ok()
-}
-
-fn directory_exists(directory: &str) -> bool {
-    match fs::metadata(directory) {
-        Ok(metadata) => metadata.is_dir(),
-        Err(_) => false,
-    }
-} 
 
 impl Config {
     pub fn new() -> Config {
@@ -26,11 +16,11 @@ impl Config {
         Config { settings, file_name: String::from("") }
     }
 
-    pub fn get(&self, key: &str) -> Option<&String> {
+    pub fn get(&self, key: &str) -> Option<&Value> {
         self.settings.get(key)
     }
 
-    pub fn set(&mut self, key: String, value: String) -> Config {
+    pub fn set(&mut self, key: String, value: Value) -> Config {
         self.settings.insert(key, value);
 
         self.clone()
@@ -40,7 +30,7 @@ impl Config {
         self.settings.contains_key(key)
     }
 
-    pub fn set_if_not_exists(&mut self, key: String, value: String) -> Config {
+    pub fn set_if_not_exists(&mut self, key: String, value: Value) -> Config {
         if !self.has(&key) {
             self.set(key, value);
         }
@@ -59,7 +49,7 @@ impl Config {
             return Err("File name not set".into());
         }
 
-        if !config_exists(self.file_name.clone()) {
+        if !self.config_exists(self.file_name.clone()) {
             return Err("Config file does not exist".into());
         }
         let contents = fs::read_to_string(format!("src/config/{}.json", self.file_name)).expect("Something went wrong reading the file");
@@ -68,7 +58,7 @@ impl Config {
     }
 
     pub fn try_read(&self, file_name: String) -> Result<Config, Box<dyn Error>> {
-        if !config_exists(file_name.clone()) {
+        if !self.config_exists(file_name.clone()) {
             return Ok(Config::new().set_filename(file_name))
         }
         let contents = fs::read_to_string(format!("src/config/{}.json", file_name)).expect("Something went wrong reading the file");
@@ -80,8 +70,8 @@ impl Config {
         if self.file_name == "" {
             return Err("File name not set".into());
         }
-        
-        if !directory_exists("src/config") {
+
+        if !self.directory_exists("src/config") {
             fs::create_dir("src/config").expect("Error creating directory");
         }
 
@@ -89,5 +79,46 @@ impl Config {
         fs::write(format!("src/config/{}.json", self.file_name), json).expect("Error writing file");
 
         Ok(self.clone())
+    }
+
+    pub fn config_exists(&self, file_name: String) -> bool {
+        fs::metadata(format!("src/config/{}.json", file_name)).is_ok()
+    }
+    
+    pub fn directory_exists(&self, directory: &str) -> bool {
+        match fs::metadata(directory) {
+            Ok(metadata) => metadata.is_dir(),
+            Err(_) => false,
+        }
+    } 
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub enum Value {
+    String(String),
+    Bool(bool),
+    Date(DateTime<Utc>),
+}
+
+impl Value {
+    pub fn get_string(&self) -> Option<&String> {
+        match self {
+            Value::String(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_bool(&self) -> Option<&bool> {
+        match self {
+            Value::Bool(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_date(&self) -> Option<&DateTime<Utc>> {
+        match self {
+            Value::Date(value) => Some(value),
+            _ => None
+        }
     }
 }
