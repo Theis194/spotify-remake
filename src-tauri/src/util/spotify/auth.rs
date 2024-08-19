@@ -1,6 +1,6 @@
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::env;
 use chrono::prelude::*;
@@ -16,13 +16,25 @@ use crate::util::{
     spotify_bb_error::BbError
 };
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthResponse {
     pub access_token: String,
     pub token_type: String,
     pub scope: String,
     pub expires_in: i64,
     pub refresh_token: Option<String>,
+}
+
+impl AuthResponse {
+    pub fn new() -> AuthResponse {
+        AuthResponse {
+            access_token: String::new(),
+            token_type: String::new(),
+            scope: String::new(),
+            expires_in: 0,
+            refresh_token: None,
+        }
+    }
 }
 
 pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: &str, code_verifier: &str) -> Result<AuthResponse, Box<dyn Error>> {
@@ -103,14 +115,11 @@ pub async fn refresh_auth_token() -> Result<(), BbError> {
 
     let auth_response: AuthResponse = response.json().await.expect("Failed to exchange code for token");
 
-    let auth_token_expires = Utc::now() + chrono::Duration::seconds(auth_response.expires_in);
+    let auth_token_expires = Utc::now() + chrono::Duration::seconds(3600);
 
     config
-        .set("auth_token".to_string(), Value::String(auth_response.access_token) )
-        .set("auth_token_type".to_string(), Value::String(auth_response.token_type))
-        .set("auth_token_scope".to_string(), Value::String(auth_response.scope))
+        .set("auth_token".to_string(), Value::AuthResponse(auth_response.clone()))
         .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
-        .set("auth_token_refresh".to_string(), Value::String(auth_response.refresh_token.unwrap_or("".to_string())))
         .write()
         .expect("Failed to write config");
 

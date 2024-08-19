@@ -4,6 +4,11 @@ use std::error::Error;
 use std::fs;
 use chrono::{DateTime, Utc};
 
+use crate::util::spotify::{
+    response_objects::user::SpotifyUser,
+    auth::AuthResponse,
+};
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Config {
     settings: HashMap<String, Value>,
@@ -98,6 +103,8 @@ pub enum Value {
     String(String),
     Bool(bool),
     Date(DateTime<Utc>),
+    AuthResponse(AuthResponse),
+    SpotifyUser(SpotifyUser),
 }
 
 impl Value {
@@ -118,6 +125,20 @@ impl Value {
     pub fn get_date(&self) -> Option<&DateTime<Utc>> {
         match self {
             Value::Date(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_auth_response(&self) -> Option<&AuthResponse> {
+        match self {
+            Value::AuthResponse(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_spotify_user(&self) -> Option<&SpotifyUser> {
+        match self {
+            Value::SpotifyUser(value) => Some(value),
             _ => None
         }
     }

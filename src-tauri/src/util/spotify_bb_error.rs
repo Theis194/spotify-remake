@@ -10,6 +10,12 @@ pub enum BbError {
     #[error("Authorization error: {0}")]
     AuthorizationError(String),
 
+    #[error("Deserialization error: {0}")]
+    DeserializationError(String),
+
+    #[error("Failed to make request")]
+    RequestError,
+
     #[error("Unknown error")]
     Unknown,
 }

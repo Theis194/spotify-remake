@@ -8,11 +8,14 @@ use std::env;
 use chrono::prelude::*;
 
 use crate::util::{
-    spotify::auth::{
-        get_authorization_url,
-        exchange_code_for_token,
-        refresh_auth_token,
-        AuthResponse
+        spotify::{
+            auth::{
+            get_authorization_url,
+            exchange_code_for_token,
+            refresh_auth_token,
+            AuthResponse
+        },
+            util::request_user_profile,
     },
     spotify_bb_error::BbError,
     config::{
@@ -26,11 +29,14 @@ fn is_user_authorized() -> bool {
     let config = Config::new()
         .try_read("cache".to_string()).expect("Failed to read config");
 
-    let user_is_authorized = config
-        .get("user_is_authorized").expect("user_is_authorized has no value")
-        .get_bool().expect("Failed to get user_is_authorized as bool");
+    let user_is_authorized = match config.get("auth_token") {
+        Some(Value::AuthResponse(auth_token)) => {
+            !auth_token.access_token.is_empty()
+        }
+        _ => false
+    };
 
-    *user_is_authorized
+    user_is_authorized
 }
 
 #[tauri::command]
@@ -58,15 +64,20 @@ async fn exchange_code(code: &str) -> Result<(), BbError> {
 
     let auth_token: AuthResponse = exchange_code_for_token(&client_id, code, redirect_uri, &code_verifier).await.unwrap();
 
-    let auth_token_expires = Utc::now() + chrono::Duration::seconds(auth_token.expires_in);
+    let auth_token_expires = Utc::now() + chrono::Duration::seconds(3600);
 
     config
-        .set("auth_token".to_string(), Value::String(auth_token.access_token))
-        .set("auth_token_type".to_string(), Value::String(auth_token.token_type))
-        .set("auth_token_scope".to_string(), Value::String(auth_token.scope))
+        .set("auth_token".to_string(), Value::AuthResponse(auth_token))
         .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
-        .set("auth_token_refresh".to_string(), Value::String(auth_token.refresh_token.unwrap_or("".to_string())))
-        .set("user_is_authorized".to_string(), Value::Bool(true))
+        .write()
+        .expect("Failed to write config");
+
+    let token = config.get("auth_token").expect("auth_token has no value").get_auth_response().expect("Failed to get auth_token as AuthResponse").access_token.clone();
+    
+    let spotify_user = request_user_profile(token).await.expect("Failed to get user profile");
+
+    config
+        .set("user_profile".to_string(), Value::SpotifyUser(spotify_user))
         .write()
         .expect("Failed to write config");
 
@@ -95,16 +106,18 @@ async fn setup() {
     let mut config = Config::new()
         .try_read("cache".to_string()).expect("Failed to read config")
         .set_if_not_exists("auth_token".to_string(), Value::String("".to_string()))
-        .set_if_not_exists("auth_token_type".to_string(), Value::String("".to_string()))
-        .set_if_not_exists("auth_token_scope".to_string(), Value::String("".to_string()))
-        .set_if_not_exists("auth_token_refresh".to_string(), Value::String("".to_string()))
         .write()
         .expect("Failed to write config");
 
     let auth_token_refresh = config
-                                        .get("auth_token_refresh")
-                                        .expect("auth_token_refresh has no value")
-                                        .get_string().expect("Failed to get auth_token_refresh as string");
+        .get("auth_token")
+        .expect("auth_token has no value")
+        .get_auth_response()
+        .unwrap_or(&AuthResponse::new())
+        .refresh_token
+        .clone()
+        .unwrap_or("".to_string());
+                                        
     
     if auth_token_refresh.is_empty() {
         config
