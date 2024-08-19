@@ -8,13 +8,13 @@ use chrono::prelude::*;
 use rand::Rng;
 use sha2::{Digest, Sha256};
 use base64::{encode_config, URL_SAFE_NO_PAD};
-use crate::util::{
+use crate::{util::{
     config::{
         Config,
         Value,
     },
     spotify_bb_error::BbError
-};
+}, AppData};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthResponse {
@@ -37,7 +37,7 @@ impl AuthResponse {
     }
 }
 
-pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: &str, code_verifier: &str) -> Result<AuthResponse, Box<dyn Error>> {
+pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: &str, code_verifier: &str, client: &Client) -> Result<AuthResponse, Box<dyn Error>> {
     let params = [
         ("grant_type", "authorization_code"),
         ("code", code),
@@ -46,7 +46,6 @@ pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: 
         ("code_verifier", code_verifier),
     ];
 
-    let client = Client::new();
     let response = client
         .post("https://accounts.spotify.com/api/token")
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -89,7 +88,7 @@ fn generate_code_challenge(verifier: &str) -> String {
     encode_config(&hash, URL_SAFE_NO_PAD)
 }
 
-pub async fn refresh_auth_token() -> Result<(), BbError> {
+pub async fn refresh_auth_token(client: Client) -> Result<(), BbError> {
     let mut config = Config::new()
         .set_filename("cache".to_string())
         .read()
@@ -103,8 +102,7 @@ pub async fn refresh_auth_token() -> Result<(), BbError> {
         ("refresh_token", refresh_token.as_str()),
         ("client_id", client_id.as_str()),
     ];
-
-    let client = Client::new();
+    
     let response = client
         .post("https://accounts.spotify.com/api/token")
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")

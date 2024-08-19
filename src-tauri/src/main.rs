@@ -3,9 +3,13 @@
 
 mod util;
 
-use dotenv::dotenv;
-use std::env;
 use chrono::prelude::*;
+use async_std::task;
+use tokio::sync::Mutex;
+use reqwest::Client;
+use dotenv::dotenv;
+use tauri::{Manager, State};
+use std::env;
 
 use crate::util::{
         spotify::{
@@ -23,6 +27,10 @@ use crate::util::{
         Value,
     }
 };
+
+struct AppData {
+    reqwest_client: Client,
+}
 
 #[tauri::command]
 fn is_user_authorized() -> bool {
@@ -49,7 +57,7 @@ fn authorize() -> String {
 }
 
 #[tauri::command]
-async fn exchange_code(code: &str) -> Result<(), BbError> {
+async fn exchange_code(code: &str, appdata: State<'_, Mutex<AppData>>) -> Result<(), BbError> {
     let mut config = Config::new()
         .set_filename("cache".to_string())
         .read()
@@ -62,22 +70,24 @@ async fn exchange_code(code: &str) -> Result<(), BbError> {
     let code_verifier = config.get("code_verifier").expect("code_verifier has no value").get_string().expect("Failed to get code_verifier as string");
     let redirect_uri = "http://localhost:1420/";
 
-    let auth_token: AuthResponse = exchange_code_for_token(&client_id, code, redirect_uri, &code_verifier).await.unwrap();
+    let client = &appdata.lock().await.reqwest_client;
 
+    let auth_token: AuthResponse = exchange_code_for_token(&client_id, code, redirect_uri, &code_verifier, client).await.unwrap();
+    
     let auth_token_expires = Utc::now() + chrono::Duration::seconds(3600);
 
     config
         .set("auth_token".to_string(), Value::AuthResponse(auth_token))
-        .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
         .write()
         .expect("Failed to write config");
 
     let token = config.get("auth_token").expect("auth_token has no value").get_auth_response().expect("Failed to get auth_token as AuthResponse").access_token.clone();
     
-    let spotify_user = request_user_profile(token).await.expect("Failed to get user profile");
+    let spotify_user = request_user_profile(token, client).await.expect("Failed to get user profile");
 
     config
         .set("user_profile".to_string(), Value::SpotifyUser(spotify_user))
+        .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
         .write()
         .expect("Failed to write config");
 
@@ -92,17 +102,34 @@ fn current_search(current: &str) {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    
-    setup().await;
 
     tauri::Builder::default()
+        .setup(|app| {
+            app.manage(Mutex::new(AppData {
+                reqwest_client: Client::new(),
+            }));
+            let app_handle = app.app_handle();
+            let setup = async move {
+                let client = app_handle
+                    .state::<Mutex<AppData>>()
+                    .lock()
+                    .await
+                    .reqwest_client
+                    .clone();
+                setup(client).await;
+            };
+
+            task::spawn(setup);
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![authorize, exchange_code, current_search, is_user_authorized])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
 
-async fn setup() {
+async fn setup(client: Client) {
     let mut config = Config::new()
         .try_read("cache".to_string()).expect("Failed to read config")
         .set_if_not_exists("auth_token".to_string(), Value::String("".to_string()))
@@ -144,7 +171,7 @@ async fn setup() {
 
             if now > *auth_token_expires {
                 println!("Token expired, refreshing...");
-                refresh_auth_token().await.expect("Failed to refresh auth token");
+                refresh_auth_token(client).await.expect("Failed to refresh auth token");
             }
         }
         None => {
