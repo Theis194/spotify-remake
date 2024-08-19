@@ -25,6 +25,8 @@
             pkgs.libsoup
             pkgs.git
             pkgs.openssl
+            pkgs.glib-networking
+            
           ];
 
           shellHook = ''
