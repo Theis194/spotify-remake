@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+// Spotify User object
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SpotifyUser {
     country: String, // The country of the user
@@ -16,6 +17,7 @@ pub struct SpotifyUser {
     uri: String, // The Spotify URI for the user
 }
 
+// User object sub-objects
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ExplicitContent { // The user's explicit content settings
     filter_enabled: bool,

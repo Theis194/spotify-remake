@@ -8,14 +8,15 @@ use chrono::prelude::*;
 use rand::Rng;
 use sha2::{Digest, Sha256};
 use base64::{encode_config, URL_SAFE_NO_PAD};
-use crate::{util::{
+use crate::util::{
     config::{
         Config,
         Value,
     },
     spotify_bb_error::BbError
-}, AppData};
+};
 
+// Struct to hold the response from the Spotify API
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthResponse {
     pub access_token: String,
@@ -37,6 +38,7 @@ impl AuthResponse {
     }
 }
 
+// Function to exchange the authorization code for an access token
 pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: &str, code_verifier: &str, client: &Client) -> Result<AuthResponse, Box<dyn Error>> {
     let params = [
         ("grant_type", "authorization_code"),
@@ -57,6 +59,7 @@ pub async fn exchange_code_for_token(client_id: &str, code: &str, redirect_uri: 
     Ok(auth_response)
 }
 
+// Function to get the authorization URL
 pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
     let code_verifier = generate_code_verifier();
     let code_challenge = generate_code_challenge(&code_verifier);
@@ -74,6 +77,7 @@ pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
     )
 }
 
+// Function to generate a code verifier
 fn generate_code_verifier() -> String {
     let verifier: String = rand::thread_rng()
         .sample_iter(&rand::distributions::Alphanumeric)
@@ -83,17 +87,20 @@ fn generate_code_verifier() -> String {
     verifier
 }
 
+// Function to generate a code challenge
 fn generate_code_challenge(verifier: &str) -> String {
     let hash = Sha256::digest(verifier.as_bytes());
     encode_config(&hash, URL_SAFE_NO_PAD)
 }
 
-pub async fn refresh_auth_token(client: Client) -> Result<(), BbError> {
+// Function to refresh the user's access token
+pub async fn refresh_auth_token(client: &Client) -> Result<(), BbError> {
     let mut config = Config::new()
         .set_filename("cache".to_string())
         .read()
         .expect("Failed to read config");
 
+    // Get the client id from enviornment variables and the refresh token from the config
     let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
     let refresh_token = config.get("auth_token_refresh").expect("auth_token_refresh has no value").get_string().expect("Failed to get auth_token_refresh as string");
 
@@ -103,6 +110,7 @@ pub async fn refresh_auth_token(client: Client) -> Result<(), BbError> {
         ("client_id", client_id.as_str()),
     ];
     
+    // Send the request to the Spotify API
     let response = client
         .post("https://accounts.spotify.com/api/token")
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -111,10 +119,12 @@ pub async fn refresh_auth_token(client: Client) -> Result<(), BbError> {
         .await
         .expect("Failed to send request");
 
+    // Deserialize the response
     let auth_response: AuthResponse = response.json().await.expect("Failed to exchange code for token");
 
     let auth_token_expires = Utc::now() + chrono::Duration::seconds(3600);
 
+    // Set the new auth token and expiration in the config
     config
         .set("auth_token".to_string(), Value::AuthResponse(auth_response.clone()))
         .set("auth_token_expires".to_string(), Value::Date(auth_token_expires))
