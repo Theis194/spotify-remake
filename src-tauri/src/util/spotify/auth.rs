@@ -71,9 +71,11 @@ pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
         .set("code_verifier".to_string(), Value::String(code_verifier))
         .write();
 
+    let scopes = "user-read-private%20user-read-email%20user-top-read%20playlist-read-private";
+
     format!(
-        "https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope=user-read-private%20user-read-email&redirect_uri={}&code_challenge_method=S256&code_challenge={}",
-        client_id, redirect_uri, code_challenge
+        "https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope={}&redirect_uri={}&code_challenge_method=S256&code_challenge={}",
+        client_id, scopes, redirect_uri, code_challenge
     )
 }
 
@@ -102,7 +104,7 @@ pub async fn refresh_auth_token(client: &Client) -> Result<(), BbError> {
 
     // Get the client id from enviornment variables and the refresh token from the config
     let client_id = env::var("CLIENT_ID").expect("CLIENT_ID not found");
-    let refresh_token = config.get("auth_token_refresh").expect("auth_token_refresh has no value").get_string().expect("Failed to get auth_token_refresh as string");
+    let refresh_token = config.get("auth_token").expect("auth_token has no value").get_auth_response().unwrap().refresh_token.clone().expect("refresh_token has no value");
 
     let params = [
         ("grant_type", "refresh_token"),

@@ -23,6 +23,7 @@ rand = "0.8.5"
 base64-compat = "1.0.0"
 thiserror = "1.0"
 async-std = "1.12.0"
+shared_lib = { path = "../shared_lib" }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

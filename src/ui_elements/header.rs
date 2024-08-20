@@ -1,13 +1,16 @@
 use leptos::*;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::*;
 use wasm_bindgen::prelude::*;
-
+use shared_lib::shared::user::SpotifyUser;
 
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }
 
 #[derive(Serialize, Deserialize)]
@@ -16,6 +19,15 @@ struct Search<'a> {
 }
 
 pub fn Header() -> impl IntoView {
+    let (profile_pic, set_profile_pic) = create_signal(String::new());
+
+    spawn_local(async move {
+        let user_profile = from_value::<SpotifyUser>(invoke("get_user_profile", to_value(&()).unwrap()).await);
+        let url = user_profile.unwrap().images[0].url.clone();
+        log(&url);
+        set_profile_pic.set(url);
+    });
+
     // This function calls the current_search function in the main.rs file
     // with the current search value
     let current_search = move |ev| {
@@ -53,24 +65,18 @@ pub fn Header() -> impl IntoView {
 
                 <div class="flex items-center">
                     <div class="colored_notifications size-6 px-4"></div>
+
                     <div class="colored_friends size-6 px-4"></div>
+                    
                     <a href="/settings">
                         <div class="colored_settings size-6 px-4"></div>
                     </a>
-                    <div class="dropdown dropdown-end size-6">
-                        <img alt="Profile picture" src="./public/img/profile_pic.png" tabindex="0" role="button" class="object-cover rounded-full size-6"/>
-                        <ul
-                          tabindex="0"
-                          class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
-                            <li><a>Item 1</a></li>
-                            <li><a>Item 2</a></li>
-                            <li>
-                                <button onclick="my_modal_3.showModal()">
-                                    Log In
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
+                    
+                    <a href="/profile">
+                        <div class="size-6">
+                        <img id="profile_pic" alt="Profile picture" src={move || profile_pic.get()} tabindex="0" role="button" class="object-cover rounded-full"/>
+                        </div>
+                    </a>
                 </div>
             </nav>
         </header>

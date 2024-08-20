@@ -13,6 +13,9 @@ pub enum BbError {
     #[error("Deserialization error: {0}")]
     DeserializationError(String),
 
+    #[error("No user profile found")]
+    NoUserProfileError,
+
     #[error("Failed to make request")]
     RequestError,
 

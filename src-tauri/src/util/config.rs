@@ -3,11 +3,9 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use chrono::{DateTime, Utc};
+use shared_lib::shared::user::SpotifyUser;
 
-use crate::util::spotify::{
-    response_objects::user::SpotifyUser,
-    auth::AuthResponse,
-};
+use crate::util::spotify::auth::AuthResponse;
 
 // Config struct to hold settings
 #[derive(Serialize, Deserialize, Clone)]

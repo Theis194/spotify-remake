@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use leptos::*;
 use web_sys::window;
 use url::Url;
+use std::rc::Rc;
+use std::cell::RefCell;
 use crate::pages::page_util::authorized::is_authorized;
 
 #[wasm_bindgen]
@@ -20,7 +22,7 @@ struct Code <'a> {
 #[component]
 pub fn Home() -> impl IntoView {
     let query_params = get_query_params();
-    let mut spotify_redirect: bool = false;
+    let spotify_redirect = Rc::new(RefCell::new(false));
 
     if let Some(query_params) = query_params {
         for (key, value) in query_params {
@@ -28,8 +30,9 @@ pub fn Home() -> impl IntoView {
                 let args = to_value(&Code {
                     code: &value,
                 }).unwrap();
+                let spotify_redirect_clone = Rc::clone(&spotify_redirect);
                 spawn_local(async move {
-                    spotify_redirect = true;
+                    *spotify_redirect_clone.borrow_mut() = true;
                     invoke("exchange_code", args).await;
                     is_authorized()
                 });
@@ -37,7 +40,7 @@ pub fn Home() -> impl IntoView {
         }
     }
     
-    if !spotify_redirect {
+    if !*spotify_redirect.borrow() {
         is_authorized();
     }
 

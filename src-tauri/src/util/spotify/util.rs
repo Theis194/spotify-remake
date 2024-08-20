@@ -1,11 +1,9 @@
 use reqwest::header::AUTHORIZATION;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+use shared_lib::shared::user::SpotifyUser;
 
-use crate::util::{
-    spotify_bb_error::BbError,
-    spotify::response_objects::user::SpotifyUser,
-};
+use crate::util::spotify_bb_error::BbError;
 
 /// Generic function to make a request to the Spotify API
 /// 
