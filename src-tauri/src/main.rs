@@ -55,6 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             util::tauri_commands::auth::exchange_code, 
             util::tauri_commands::auth::is_user_authorized,
             util::tauri_commands::profile::get_user_profile,
+            util::tauri_commands::profile::get_profile_data,
             current_search
         ])
         .run(tauri::generate_context!())

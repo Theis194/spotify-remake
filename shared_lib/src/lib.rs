@@ -10,6 +10,10 @@ pub mod shared {
         pub mod image;
         pub mod top_tracks;
         pub mod top_artists;
+
+        pub mod simplified {
+            pub mod artist;
+        }
     }
 
     // Spotify object components

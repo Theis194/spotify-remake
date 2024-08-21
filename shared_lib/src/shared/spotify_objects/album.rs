@@ -6,8 +6,8 @@ use crate::shared::spotify_object_components::{
 };
 
 use super::{
-    artist::Artist, 
-    image::Image
+    image::Image, 
+    simplified::artist::SimplifiedArtist
 };
 
 
@@ -27,5 +27,5 @@ pub struct Album {
     pub restrictions: Option<Restrictions>,
     pub r#type: String,
     pub uri: String,
-    pub artists: Vec<Artist>,
+    pub artists: Vec<SimplifiedArtist>,
 }

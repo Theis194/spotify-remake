@@ -35,7 +35,7 @@ use crate::util::spotify_bb_error::BbError;
 /// 
 ///   println!("{:?}", response);
 /// }
-pub async fn request<T>(url: String, token: String, client: &Client) -> Result<T, BbError> 
+pub async fn request<T>(url: String, token: &String, client: &Client) -> Result<T, BbError> 
 where 
     T: DeserializeOwned,
 {
@@ -83,5 +83,5 @@ where
 ///   println!("{:?}", response);
 /// }
 pub async fn request_user_profile(token: String, client: &Client) -> Result<SpotifyUser, BbError> {
-    request::<SpotifyUser>("https://api.spotify.com/v1/me".to_string(), token, client).await
+    request::<SpotifyUser>("https://api.spotify.com/v1/me".to_string(), &token, client).await
 }

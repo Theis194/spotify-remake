@@ -1,8 +1,12 @@
-use shared_lib::shared::spotify_objects::user::SpotifyUser;
+use shared_lib::shared::{
+    profile_data::ProfileData, 
+    spotify_objects::{top_artists::TopArtists, top_tracks::TopTracks, user::SpotifyUser}
+};
 
 use crate::util::{
     config::Config,
-    spotify_bb_error::BbError
+    spotify_bb_error::BbError,
+    spotify::util::request,
 };
 
 #[tauri::command]
@@ -25,6 +29,43 @@ pub fn get_user_profile(filename: String) -> Result<SpotifyUser, BbError> {
         Some(user_profile) => Ok(user_profile.clone()),
         None => Err(BbError::NoUserProfileError)
     }
+}
+
+#[tauri::command]
+pub async fn get_profile_data() -> Result<ProfileData, BbError> {
+    let config = Config::new()
+        .set_filename("cache".to_string())
+        .read()
+        .expect("Failed to read config");
+
+    let auth_token = match config.get("auth_token") {
+        Some(auth_token) => {
+            Some(auth_token.get_auth_response().unwrap().access_token.clone())
+        }
+        None => {
+            None
+        }
+    }.expect("No auth token found");
+
+    let client = reqwest::Client::new();
+
+    let user_profile = match config.get("user_profile") {
+        Some(user_profile) => {
+            Some(user_profile.get_spotify_user().unwrap())
+        }
+        None => {
+            None
+        }
+    }.expect("No user profile found").clone();
+
+    let top_tracks = request::<TopTracks>("https://api.spotify.com/v1/me/top/tracks".to_string(), &auth_token, &client).await.expect("Error getting top tracks");
+    let top_artists = request::<TopArtists>("https://api.spotify.com/v1/me/top/artists".to_string(), &auth_token, &client).await.expect("Error getting top artists");
+
+    Ok(ProfileData {
+        user: user_profile,
+        top_tracks,
+        top_artists
+    })
 }
 
 #[cfg(test)]

@@ -42,7 +42,7 @@ pub fn App() -> impl IntoView {
                     <div class="flex flex-col w-full text-2xl font-bold px-2 h-screen">
                         <Header/>
 
-                        <div class="flex-1 border border-neutral-content rounded px-2 py-2">
+                        <div class="flex-1 border border-neutral-content rounded px-2 py-2 overflow-y-scroll">
                             <Routes>
                                 <Route path="/" view=Home/>
                                 <Route path="/myLibrary" view=MyLibrary/>

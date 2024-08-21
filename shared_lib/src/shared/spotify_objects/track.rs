@@ -9,13 +9,13 @@ use crate::shared::spotify_object_components::{
 
 use super::{
     album::Album, 
-    artist::Artist
+    simplified::artist::SimplifiedArtist
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
 pub struct Track {
     pub album: Album,
-    pub artists: Vec<Artist>,
+    pub artists: Vec<SimplifiedArtist>,
     pub available_markets: Vec<String>,
     pub disc_number: i32,
     pub duration_ms: i32,
