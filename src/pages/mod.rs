@@ -7,5 +7,6 @@ pub mod audiobooks;
 pub mod artists;
 pub mod folders;
 pub mod podcasts;
+pub mod profile;
 
 pub mod page_util;

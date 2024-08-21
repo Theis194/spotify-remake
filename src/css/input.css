@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.responsive-img {
+    max-width: 14rem;
+    min-width: 10rem;
+    width: 20vw;
+}
+
 .colored_library {
     background-color: theme('colors.neutral-content'); /* defines the background color of the image */
     mask: url(../../public/img/library.svg) no-repeat center / contain;

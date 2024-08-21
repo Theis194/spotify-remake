@@ -39,7 +39,7 @@ pub fn Home() -> impl IntoView {
             }
         }
     }
-    
+
     if !*spotify_redirect.borrow() {
         is_authorized();
     }

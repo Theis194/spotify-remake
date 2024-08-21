@@ -2,6 +2,8 @@ use leptos::*;
 use leptos_router::*;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 use crate::{
     ui_elements::{
@@ -18,6 +20,8 @@ use crate::{
         artists::Artists,
         folders::Folders,
         podcasts::Podcasts,
+        profile::Profile,
+        page_util::authorized::is_authorized,
     },
 };
 
@@ -49,6 +53,7 @@ pub fn App() -> impl IntoView {
                                 <Route path="/audiobooks" view=Audiobooks/>
                                 <Route path="/folders" view=Folders/>
                                 <Route path="/podcasts" view=Podcasts/>
+                                <Route path="/profile" view=Profile/>
                             </Routes>
 
                             </div>
@@ -62,11 +67,19 @@ pub fn App() -> impl IntoView {
 
 fn Modal() -> impl IntoView {
     let (spotify_url, set_spotify_url) = create_signal(String::new());
+    let spotify_redirect = Rc::new(RefCell::new(false));
+    let spotify_redirect_clone = Rc::clone(&spotify_redirect);
 
     spawn_local(async move {
+        *spotify_redirect_clone.borrow_mut() = true;
         let url = invoke("authorize", to_value(&()).unwrap()).await.as_string().unwrap();
         set_spotify_url.set(url);
+        is_authorized()
     });
+
+    if !*spotify_redirect.borrow() {
+        is_authorized();
+    }
 
     view! {
         <div id="authorize_modal" class="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-40 py-10">
