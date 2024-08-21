@@ -36,8 +36,10 @@ fn current_search(current: &str) {
 // This launches the Tauri application
 // It sets up the app data and runs setup
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
+
+    setup().await;
 
     tauri::Builder::default()
         .setup(|app| {
@@ -45,20 +47,6 @@ async fn main() {
             app.manage(Mutex::new(AppData {
                 reqwest_client: Client::new(),
             }));
-            // Extracts the reqwest client from the app data and runs setup
-            let app_handle = app.app_handle();
-            let setup = async move {
-                let binding = app_handle.state::<Mutex<AppData>>();
-
-                let appdata = binding.lock().await;
-
-                let client = &appdata.reqwest_client;
-
-                setup(client).await;
-            };
-
-            // Task:.spawn is used to run the async function setup without having to await it
-            task::spawn(setup);
 
             Ok(())
         })
@@ -71,12 +59,13 @@ async fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    Ok(())
 }
 
 // This function is called when the app is first started
 // It checks if the user is authorized and if the auth token is expired
 // If the token is expired, it refreshes it
-async fn setup(client: &Client) {
+async fn setup() {
     // Load the config, if it doesn't exist, create it
     let mut config = Config::new()
         .try_read("cache".to_string()).expect("Failed to read config")
@@ -121,7 +110,8 @@ async fn setup(client: &Client) {
 
             if now > *auth_token_expires {
                 println!("Token expired, refreshing...");
-                refresh_auth_token(&client).await.expect("Failed to refresh auth token");
+                refresh_auth_token().await.expect("Failed to refresh auth token");
+                println!("Token refreshed");
             }
         }
         None => {

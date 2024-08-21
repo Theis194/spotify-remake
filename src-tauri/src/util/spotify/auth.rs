@@ -96,7 +96,8 @@ fn generate_code_challenge(verifier: &str) -> String {
 }
 
 // Function to refresh the user's access token
-pub async fn refresh_auth_token(client: &Client) -> Result<(), BbError> {
+pub async fn refresh_auth_token() -> Result<(), BbError> {
+    let client = Client::new();
     let mut config = Config::new()
         .set_filename("cache".to_string())
         .read()
