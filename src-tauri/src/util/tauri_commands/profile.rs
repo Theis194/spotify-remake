@@ -1,4 +1,4 @@
-use shared_lib::shared::user::SpotifyUser;
+use shared_lib::shared::spotify_objects::user::SpotifyUser;
 
 use crate::util::{
     config::Config,

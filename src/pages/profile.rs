@@ -2,7 +2,7 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::*;
 use wasm_bindgen::prelude::*;
-use shared_lib::shared::user::SpotifyUser;
+use shared_lib::shared::spotify_objects::user::SpotifyUser;
 
 #[wasm_bindgen]
 extern "C" {

@@ -1,5 +1,12 @@
 use serde::{Serialize, Deserialize};
 
+use crate::shared::spotify_object_components::{
+    external_urls::ExternalUrls, 
+    followers::Followers
+};
+
+use super::image::Image;
+
 // Spotify User object
 #[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
 pub struct SpotifyUser {
@@ -22,22 +29,4 @@ pub struct SpotifyUser {
 pub struct ExplicitContent { // The user's explicit content settings
     pub filter_enabled: bool,
     pub filter_locked: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
-pub struct ExternalUrls { // External URLs for the user
-    pub spotify: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
-pub struct Followers { // Information about the user's followers
-    pub href: Option<String>,
-    pub total: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
-pub struct Image { // The user's profile image
-    pub height: Option<i32>,
-    pub url: String,
-    pub width: Option<i32>,
 }

@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
+use shared_lib::shared::spotify_objects::user::SpotifyUser;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use chrono::{DateTime, Utc};
-use shared_lib::shared::user::SpotifyUser;
 
 use crate::util::spotify::auth::AuthResponse;
 

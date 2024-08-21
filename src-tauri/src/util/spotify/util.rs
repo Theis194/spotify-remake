@@ -1,7 +1,7 @@
 use reqwest::header::AUTHORIZATION;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
-use shared_lib::shared::user::SpotifyUser;
+use shared_lib::shared::spotify_objects::user::SpotifyUser;
 
 use crate::util::spotify_bb_error::BbError;
 
