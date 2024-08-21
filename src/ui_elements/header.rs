@@ -18,11 +18,16 @@ struct Search<'a> {
     current: &'a str,
 }
 
+#[derive(Serialize, Deserialize)]
+struct UserProfileFilename<'a> {
+    filename: &'a str,
+}
+
 pub fn Header() -> impl IntoView {
     let (profile_pic, set_profile_pic) = create_signal(String::new());
 
     spawn_local(async move {
-        let user_profile = from_value::<SpotifyUser>(invoke("get_user_profile", to_value(&()).unwrap()).await);
+        let user_profile = from_value::<SpotifyUser>(invoke("get_user_profile", to_value(&UserProfileFilename{filename: "cache"}).unwrap()).await);
         let url = user_profile.unwrap().images[0].url.clone();
         log(&url);
         set_profile_pic.set(url);

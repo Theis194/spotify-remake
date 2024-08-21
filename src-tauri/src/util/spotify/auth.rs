@@ -17,7 +17,7 @@ use crate::util::{
 };
 
 // Struct to hold the response from the Spotify API
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct AuthResponse {
     pub access_token: String,
     pub token_type: String,

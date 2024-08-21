@@ -8,7 +8,7 @@ use shared_lib::shared::user::SpotifyUser;
 use crate::util::spotify::auth::AuthResponse;
 
 // Config struct to hold settings
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Config {
     settings: HashMap<String, Value>,
     file_name: String,
@@ -110,7 +110,7 @@ impl Config {
 }
 
 // Value enum to hold different types of values
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Value {
     String(String),
     Bool(bool),
@@ -155,5 +155,193 @@ impl Value {
             Value::SpotifyUser(value) => Some(value),
             _ => None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use uuid::Uuid;
+
+    // Config tests
+
+    #[test]
+    fn test_set_filename() {
+        let mut config = Config::new();
+        config.set_filename("test".to_string());
+        assert_eq!(config.file_name, "test");
+    }
+
+    #[test]
+    fn test_new() {
+        let config = Config::new();
+        assert_eq!(config.settings.len(), 0);
+    }
+
+    #[test]
+    fn test_config() {
+        let mut config = Config::new();
+        config.set("test".to_string(), Value::String("test".to_string()));
+        assert_eq!(config.get("test").unwrap().get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_read() {
+        let filename = format!("test-{}", Uuid::new_v4());
+        let mut config = Config::new();
+        config.set_filename(filename.clone());
+        config.set("test".to_string(), Value::String("test".to_string()));
+        config.write().unwrap();
+        let read_config = config.read().unwrap();
+        assert_eq!(read_config.get("test").unwrap().get_string().unwrap(), "test");
+        fs::remove_file(format!("src/config/{}.json", config.file_name)).expect("Error removing file");
+    }
+
+    #[test]
+    fn test_try_read() {
+        let filename = format!("test-{}", Uuid::new_v4());
+        let mut config = Config::new();
+        config.set_filename(filename.clone());
+        config.set("test".to_string(), Value::String("test".to_string()));
+        config.write().unwrap();
+        let read_config = config.try_read(filename).unwrap();
+        assert_eq!(read_config.get("test").unwrap().get_string().unwrap(), "test");
+        fs::remove_file(format!("src/config/{}.json", config.file_name)).expect("Error removing file");
+    }
+
+    #[test]
+    fn test_write() {
+        let filename = format!("test-{}", Uuid::new_v4());
+        let mut config = Config::new();
+        config.set_filename(filename.clone());
+        config.set("test".to_string(), Value::String("test".to_string()));
+        config.write().unwrap();
+        let read_config = config.read().unwrap();
+        assert_eq!(read_config.get("test").unwrap().get_string().unwrap(), "test");
+        fs::remove_file(format!("src/config/{}.json", config.file_name)).expect("Error removing file");
+    }
+
+    #[test]
+    fn test_config_exists() {
+        let filename = format!("test-{}", Uuid::new_v4());
+        let mut config = Config::new();
+        config.set_filename(filename.clone());
+        config.write().unwrap();
+        assert_eq!(config.config_exists(filename), true);
+        fs::remove_file(format!("src/config/{}.json", config.file_name)).expect("Error removing file");
+    }
+
+    #[test]
+    fn test_directory_exists() {
+        let config = Config::new();
+        assert_eq!(config.directory_exists("src/config"), true);
+    }
+
+    #[test]
+    fn test_set_if_not_exists() {
+        let mut config = Config::new();
+        config.set_if_not_exists("test".to_string(), Value::String("test".to_string()));
+        assert_eq!(config.get("test").unwrap().get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_has() {
+        let mut config = Config::new();
+        config.set("test".to_string(), Value::String("test".to_string()));
+        assert_eq!(config.has("test"), true);
+    }
+
+    #[test]
+    fn test_set() {
+        let mut config = Config::new();
+        config.set("test".to_string(), Value::String("test".to_string()));
+        assert_eq!(config.get("test").unwrap().get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_get() {
+        let mut config = Config::new();
+        config.set("test".to_string(), Value::String("test".to_string()));
+        assert_eq!(config.get("test").unwrap().get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_read_non_existing_file() {
+        let filename = format!("non_existing_file-{}", Uuid::new_v4());
+        let config = Config::new().set_filename(filename.clone());
+        let result = config.read();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Config file does not exist");
+    }
+
+    // Value tests
+
+    #[test]
+    fn test_value() {
+        let value = Value::String("test".to_string());
+        assert_eq!(value.get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_get_string() {
+        let value = Value::String("test".to_string());
+        assert_eq!(value.get_string().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_get_bool() {
+        let value = Value::Bool(true);
+        assert_eq!(value.get_bool().unwrap(), &true);
+    }
+
+    #[test]
+    fn test_get_date() {
+        let now = Utc::now();
+        let now_clone = now.clone();
+        let value = Value::Date(now);
+        assert_eq!(value.get_date().unwrap(), &now_clone);
+    }
+
+    #[test]
+    fn test_get_auth_response() {
+        let value = Value::AuthResponse(AuthResponse::new());
+        assert_eq!(value.get_auth_response().unwrap(), &AuthResponse::new());
+    }
+
+    #[test]
+    fn test_get_spotify_user() {
+        let value = Value::SpotifyUser(SpotifyUser::default());
+        assert_eq!(value.get_spotify_user().unwrap(), &SpotifyUser::default());
+    }
+
+    #[test]
+    fn test_value_string() {
+        let value = Value::String("test".to_string());
+        assert_eq!(value, Value::String("test".to_string()));
+    }
+
+    #[test]
+    fn test_value_bool() {
+        let value = Value::Bool(true);
+        assert_eq!(value, Value::Bool(true));
+    }
+
+    #[test]
+    fn test_value_date() {
+        let now = Utc::now();
+        let value = Value::Date(now);
+        assert_eq!(value, Value::Date(now));
+    }
+
+    #[test]
+    fn test_value_auth_response() {
+        let value = Value::AuthResponse(AuthResponse::new());
+        assert_eq!(value, Value::AuthResponse(AuthResponse::new()));
+    }
+
+    #[test]
+    fn test_value_spotify_user() {
+        let value = Value::SpotifyUser(SpotifyUser::default());
+        assert_eq!(value, Value::SpotifyUser(SpotifyUser::default()));
     }
 }
