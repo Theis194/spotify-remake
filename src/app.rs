@@ -36,13 +36,13 @@ pub fn App() -> impl IntoView {
     view! {
         <div>
             <Router>
-                <div class="relative min-h-screen flex">
+                <div class="min-h-screen grid grid-cols-[auto_1fr]">
                     <SideNav/>
 
-                    <div class="flex flex-col w-full text-2xl font-bold px-2 h-screen">
+                    <div class="w-full text-2xl font-bold px-2 h-screen">
                         <Header/>
 
-                        <div class="flex-1 border border-neutral-content rounded px-2 py-2 overflow-y-scroll">
+                        <div class="border border-neutral-content rounded px-2 py-2 overflow-y-scroll hide-scroll-bar">
                             <Routes>
                                 <Route path="/" view=Home/>
                                 <Route path="/myLibrary" view=MyLibrary/>
@@ -56,8 +56,8 @@ pub fn App() -> impl IntoView {
                                 <Route path="/profile" view=Profile/>
                             </Routes>
 
-                            </div>
                         </div>
+                    </div>
                     <Modal/>
                 </div>
             </Router>

@@ -8,6 +8,11 @@
     width: 20vw;
 }
 
+.hide-scroll-bar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 .colored_library {
     background-color: theme('colors.neutral-content'); /* defines the background color of the image */
     mask: url(../../public/img/library.svg) no-repeat center / contain;

@@ -8,6 +8,7 @@ use shared_lib::shared::{
         top_artists::TopArtists, 
         top_tracks::TopTracks, 
         track::Track, 
+        artist::Artist,
         user::SpotifyUser
     }
 };
@@ -82,12 +83,21 @@ pub fn Profile() -> impl IntoView {
                 </div>
             </div>
 
-            <div>
-            
+            <div id="Popular artists">
+                <h2 class="text-2xl">Popular artists</h2>
+                
+                <div class="carousel">
+                    {move || top_artists().items.iter().map(|artist| artist_list_item(artist)).collect::<Vec<_>>()}
+                </div>
+
+                /* <div class="carousel max-w-full overflow-hidden">
+                    {move || top_artists().items.iter().map(|artist| artist_list_item(artist)).collect::<Vec<_>>()}
+                </div> */
             </div>
 
             <div id="Popular songs">
                 <h2 class="text-2xl">Popular songs</h2>
+                
                 <div class="grid grid-cols-1">
                     {move || top_tracks().items.iter().map(|track| song_list_item(track)).collect::<Vec<_>>()}
                 </div>
@@ -116,6 +126,24 @@ fn song_list_item(song: &Track) -> impl IntoView {
             <div class="flex grow w-2/5 text-neutral-content justify-between gap-10 text-sm">
                 <div><p>{album_name}</p></div>
                 <div><p>{duration}</p></div>
+            </div>
+        </div>
+    }
+}
+
+fn artist_list_item(artist: &Artist) -> impl IntoView {
+    let artist_img = artist.images[0].url.clone();
+    let artist_name = &artist.name;
+    let genres = artist.genres.join(", ");
+
+    view! {
+        <div class="carousel-item w-1/3 md:w-1/4 lg:w-1/5">
+            <div class="relative aspect-[4/3]">
+                <img src={artist_img} class="w-full h-full object-cover" />
+                <div class="absolute bottom-0 left-0 p-2 bg-opacity-60 bg-black text-white w-full">
+                    <h2 class="text-sm md:text-base lg:text-lg font-bold">{artist_name}</h2>
+                    <p class="text-xs md:text-sm lg:text-base mt-2 truncate">{genres}</p>
+                </div>
             </div>
         </div>
     }

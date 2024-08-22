@@ -48,7 +48,7 @@ pub fn Header() -> impl IntoView {
 
     view! {
         <header class="py-2 flex-row">
-            <nav class="w-full flex justify-between">
+            <nav class="flex justify-between">
                 <div class="flex">
                     <a class="flex items-center px-2 transition duration-200 hover:text-primary" href="/">
                         <div class="colored_home size-6 duration-200">test</div>
