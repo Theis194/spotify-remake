@@ -1,6 +1,7 @@
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::*;
+use svg::view;
 use wasm_bindgen::prelude::*;
 use shared_lib::shared::{
     profile_data::ProfileData, 
@@ -29,78 +30,132 @@ struct UserProfileFilename<'a> {
 
 #[component]
 pub fn Profile() -> impl IntoView {
-    let (profile_data, set_profile_data) = create_signal(ProfileData::default());
-    let (profile_data_loaded, set_profile_data_loaded) = create_signal(false);
-
-    spawn_local(async move {
-        let profile_data = from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await);
-        
-        set_profile_data.set(profile_data.unwrap());
-        set_profile_data_loaded.set(true);
+    let profile_data = create_resource(|| (), |_| async move {
+        from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await).unwrap_or_default()
     });
 
+    let is_loading = profile_data.loading();
+
+    log(format!("Is loaded: {:?}", is_loading.get()).as_str());
+
     let profile_pic = move || {
-        if profile_data_loaded.get() {
-            return profile_data.get().user.images[1].url.clone();
+        if let Some(data) = profile_data.get() {
+            data.user.images.get(1).map_or(String::new(), |image| image.url.clone())
         } else {
-            return String::new();
+            String::new()
         }
     };
 
     let profile = move || {
-        if profile_data_loaded.get() {
-            return profile_data.get().user.clone();
-        } else {
-            return SpotifyUser::default();
-        }
+        profile_data.get().map_or(SpotifyUser::default(), |data| data.user.clone())
     };
 
     let top_tracks = move || {
-        if profile_data_loaded.get() {
-            return profile_data.get().top_tracks.clone();
-        } else {
-            return TopTracks::default();
-        }
+        profile_data.get().map_or(TopTracks::default(), |data| data.top_tracks.clone())
     };
 
     let top_artists = move || {
-        if profile_data_loaded.get() {
-            return profile_data.get().top_artists.clone();
-        } else {
-            return TopArtists::default();
-        }
+        profile_data.get().map_or(TopArtists::default(), |data| data.top_artists.clone())
     };
 
     view! {
         <div>
+            // Profile
             <div class="flex items-end">
-                <div class="object-scale-down">
-                    <img src={move || profile_pic} alt="profile pic" class="object-cover rounded-full responsive-img"></img>
-                </div>
+                <Transition fallback= move ||  {view! {<div class="rounded-full w-32 repsonsive-img skeleton"></div>}}>
+                    {move || if is_loading.get() {
+                        view! {
+                            <div class="skeleton rounded-full overflow-hidden">
+                                <img src="https://via.placeholder.com/150" alt="profile pic" class="object-cover opacity-0 responsive-img"></img>
+                            </div>
+                        }
+                    } else {
+                        view! {
+                            <div class="object-scale-down">
+                                <img src={move || profile_pic()} alt="profile pic" class="object-cover rounded-full responsive-img"></img>
+                            </div>
+                        }
+                    }}
+                </Transition>
                 <div class="flex-1 w-full">
                     <p class="text-xs pb-2">profile</p>
                     <h1 class="text-left text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl">{move || profile().display_name}</h1>
                 </div>
             </div>
 
+            // Top artists
             <div id="Popular artists">
-                <h2 class="text-2xl">Popular artists</h2>
+                <h2 class="text-2xl">"Popular artists"</h2>
                 
-                <div class="carousel">
-                    {move || top_artists().items.iter().map(|artist| artist_list_item(artist)).collect::<Vec<_>>()}
-                </div>
+                <Transition fallback = move || {view! {<div>"Loading"</div>}}>
+                    {move || if is_loading.get() {
+                        view! {
+                            <div class="carousel">
+                                {move || {
+                                    let items = (0..5).map(|_| {
+                                        view! {
+                                            <div class="carousel-item skeleton w-1/3 md:w-1/4 lg:w-1/5">
+                                                <div class="relative aspect-[4/3]">
+                                                    <img src="https://via.placeholder.com/300" class="w-full opacity-0 h-full object-cover" />
+                                                </div>
+                                            </div>
+                                        }
+                                    }).collect::<Vec<_>>();
 
-                /* <div class="carousel max-w-full overflow-hidden">
-                    {move || top_artists().items.iter().map(|artist| artist_list_item(artist)).collect::<Vec<_>>()}
-                </div> */
+                                   items.into_iter().collect::<Vec<_>>() 
+                                }}
+                            </div>
+                        }
+                    } else {
+                        view! {
+                            <div class="carousel">
+                                {move || top_artists().items.iter().map(|artist| artist_list_item(artist)).collect::<Vec<_>>()}
+                            </div>
+                        }
+                    }}
+                </Transition>
             </div>
 
-            <div id="Popular songs">
-                <h2 class="text-2xl">Popular songs</h2>
-                
-                <div class="grid grid-cols-1">
-                    {move || top_tracks().items.iter().map(|track| song_list_item(track)).collect::<Vec<_>>()}
-                </div>
+            // Top tracks
+            <div id="Popular songs overflow-hidden">
+                <h2 class="text-2xl">"Popular songs"</h2>
+
+                <Transition fallback = move || {view! {<div>"Loading"</div>}}>
+                    {move || if is_loading.get() {
+                        view! {
+                            <div class="grid grid-cols-1">
+                                {move || {
+                                    let items = (0..5).map(|_| {
+                                        view! {
+                                            <div class="flex justify-between items-center rounded px-2 py-2 skeleton hover:bg-neutral">
+                                                <div class="flex w-3/5 items-center">
+                                                    <img src="https://via.placeholder.com/300" class="size-8 opacity-0"/>
+                                                    <div class="px-4">
+                                                        <h2 class="text-base -mb-1 text-neutral-content w-32"></h2>
+                                                        <h3 class="text-sm text-neutral-content w-32"></h3>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex grow w-2/5 text-neutral-content justify-between gap-10 text-sm">
+                                                    <div><p class="w-32"></p></div>
+                                                    <div><p class="w-32"></p></div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }).collect::<Vec<_>>();
+
+                                    items.into_iter().collect::<Vec<_>>()
+                                }}
+                            </div>
+                        }
+                    } else {
+                        view! {
+                            <div class="grid grid-cols-1">
+                                {move || top_tracks().items.iter().map(|track| song_list_item(track)).collect::<Vec<_>>()}
+                            </div>
+                        }
+                    }}
+                </Transition>
             </div>
         </div>
     }

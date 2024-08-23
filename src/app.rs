@@ -39,21 +39,21 @@ pub fn App() -> impl IntoView {
                 <div class="min-h-screen grid grid-cols-[auto_1fr]">
                     <SideNav/>
 
-                    <div class="w-full text-2xl font-bold px-2 h-screen">
+                    <div class="grid grid-rows-[auto,1fr] w-full text-2xl font-bold px-2 h-screen">
                         <Header/>
 
                         <div class="border border-neutral-content rounded px-2 py-2 overflow-y-scroll hide-scroll-bar">
                             <Routes>
-                                <Route path="/" view=Home/>
-                                <Route path="/myLibrary" view=MyLibrary/>
-                                <Route path="/saved" view=Saved/>
-                                <Route path="/albums" view=Albums/>
-                                <Route path="/search" view=Search/>
-                                <Route path="/artists" view=Artists/>
-                                <Route path="/audiobooks" view=Audiobooks/>
-                                <Route path="/folders" view=Folders/>
-                                <Route path="/podcasts" view=Podcasts/>
-                                <Route path="/profile" view=Profile/>
+                                <Route path="/" ssr=SsrMode::OutOfOrder view=Home/>
+                                <Route path="/myLibrary" ssr=SsrMode::OutOfOrder view=MyLibrary/>
+                                <Route path="/saved" ssr=SsrMode::OutOfOrder view=Saved/>
+                                <Route path="/albums" ssr=SsrMode::OutOfOrder view=Albums/>
+                                <Route path="/search" ssr=SsrMode::OutOfOrder view=Search/>
+                                <Route path="/artists" ssr=SsrMode::OutOfOrder view=Artists/>
+                                <Route path="/audiobooks" ssr=SsrMode::OutOfOrder view=Audiobooks/>
+                                <Route path="/folders" ssr=SsrMode::OutOfOrder view=Folders/>
+                                <Route path="/podcasts" ssr=SsrMode::OutOfOrder view=Podcasts/>
+                                <Route path="/profile" ssr=SsrMode::OutOfOrder view=Profile/>
                             </Routes>
 
                         </div>
