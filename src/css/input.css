@@ -168,3 +168,63 @@ a:hover .colored_settings {
     mask: url(../../public/img/notifications.svg) no-repeat center / contain;
     -webkit-mask: url(../../public/img/notifications.svg) no-repeat center / contain;
 }
+
+.colored_play {
+    background-color: theme('colors.primary-content'); /* defines the background color of the image */
+    mask: url(../../public/img/play.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/play.svg) no-repeat center / contain;
+}
+
+.colored_pause {
+    background-color: theme('colors.primary-content'); /* defines the background color of the image */
+    mask: url(../../public/img/pause.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/pause.svg) no-repeat center / contain;
+}
+
+.colored_step_back {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/step_back.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/step_back.svg) no-repeat center / contain;
+}
+
+.colored_step_back:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/step_back.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/step_back.svg) no-repeat center / contain;
+}
+
+.colored_step_forward {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/step_forward.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/step_forward.svg) no-repeat center / contain;
+}
+
+.colored_step_forward:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/step_forward.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/step_forward.svg) no-repeat center / contain;
+}
+
+.colored_shuffle {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+}
+
+.colored_shuffle:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+}
+
+.colored_loop {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/loop.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
+}
+
+.colored_loop:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/loop.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
+}
