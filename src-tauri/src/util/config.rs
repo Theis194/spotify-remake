@@ -1,5 +1,9 @@
 use serde::{Deserialize, Serialize};
-use shared_lib::shared::spotify_objects::user::SpotifyUser;
+use shared_lib::shared::spotify_objects::{
+    top_artists::TopArtists, 
+    top_tracks::TopTracks, 
+    user::SpotifyUser
+};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -117,6 +121,8 @@ pub enum Value {
     Date(DateTime<Utc>),
     AuthResponse(AuthResponse),
     SpotifyUser(SpotifyUser),
+    TopTracks(TopTracks),
+    TopArtists(TopArtists),
 }
 
 // Value methods
@@ -153,6 +159,20 @@ impl Value {
     pub fn get_spotify_user(&self) -> Option<&SpotifyUser> {
         match self {
             Value::SpotifyUser(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_top_tracks(&self) -> Option<&TopTracks> {
+        match self {
+            Value::TopTracks(value) => Some(value),
+            _ => None
+        }
+    }
+
+    pub fn get_top_artists(&self) -> Option<&TopArtists> {
+        match self {
+            Value::TopArtists(value) => Some(value),
             _ => None
         }
     }
@@ -315,6 +335,18 @@ mod tests {
     }
 
     #[test]
+    fn test_get_top_tracks() {
+        let value = Value::TopTracks(TopTracks::default());
+        assert_eq!(value.get_top_tracks().unwrap(), &TopTracks::default());
+    }
+
+    #[test]
+    fn test_get_top_artists() {
+        let value = Value::TopArtists(TopArtists::default());
+        assert_eq!(value.get_top_artists().unwrap(), &TopArtists::default());
+    }
+
+    #[test]
     fn test_value_string() {
         let value = Value::String("test".to_string());
         assert_eq!(value, Value::String("test".to_string()));
@@ -343,5 +375,17 @@ mod tests {
     fn test_value_spotify_user() {
         let value = Value::SpotifyUser(SpotifyUser::default());
         assert_eq!(value, Value::SpotifyUser(SpotifyUser::default()));
+    }
+
+    #[test]
+    fn test_value_top_tracks() {
+        let value = Value::TopTracks(TopTracks::default());
+        assert_eq!(value, Value::TopTracks(TopTracks::default()));
+    }
+
+    #[test]
+    fn test_value_top_artists() {
+        let value = Value::TopArtists(TopArtists::default());
+        assert_eq!(value, Value::TopArtists(TopArtists::default()));
     }
 }

@@ -55,7 +55,7 @@ pub fn Profile() -> impl IntoView {
         }
     };
 
-    let mut top_tracks = move || {
+    let top_tracks = move || {
         if profile_data_loaded.get() {
             return profile_data.get().top_tracks.clone();
         } else {
