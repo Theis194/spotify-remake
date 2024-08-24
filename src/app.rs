@@ -41,6 +41,7 @@ pub fn App() -> impl IntoView {
     let profile_signal = create_rw_signal(GlobalContext {
         profile: ProfileData::default(),
         profile_loaded: false,
+        currently_playing: None,
     });
 
     provide_context(profile_signal);
@@ -52,6 +53,7 @@ pub fn App() -> impl IntoView {
             profile_signal.set(GlobalContext {
                 profile,
                 profile_loaded: true,
+                currently_playing: None,
             });
         }
     });

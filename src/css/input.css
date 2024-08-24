@@ -8,6 +8,10 @@
     width: 20vw;
 }
 
+.responsive-input {
+    width: clamp(14rem, calc(20vw + 10rem), 50%);
+}
+
 .hide-scroll-bar {
     -ms-overflow-style: none;
     scrollbar-width: none;
