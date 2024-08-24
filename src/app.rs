@@ -1,6 +1,10 @@
 use leptos::*;
 use leptos_router::*;
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::*;
+use shared_lib::{
+    shared::profile_data::ProfileData,
+    shared::global_context::GlobalContext,
+};
 use wasm_bindgen::prelude::*;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -34,6 +38,24 @@ extern "C" {
 
 #[component]
 pub fn App() -> impl IntoView {
+    let profile_signal = create_rw_signal(GlobalContext {
+        profile: ProfileData::default(),
+        profile_loaded: false,
+    });
+
+    provide_context(profile_signal);
+
+    spawn_local({
+        let profile_signal = profile_signal.clone();
+        async move {
+            let profile = from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await).unwrap_or_default();
+            profile_signal.set(GlobalContext {
+                profile,
+                profile_loaded: true,
+            });
+        }
+    });
+
     view! {
         <div>
             <Router>

@@ -1,16 +1,10 @@
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::*;
-use svg::view;
 use wasm_bindgen::prelude::*;
 use shared_lib::shared::{
-    profile_data::ProfileData, 
-    spotify_objects::{
-        top_artists::TopArtists, 
-        top_tracks::TopTracks, 
-        track::Track, 
-        artist::Artist,
-        user::SpotifyUser
+    global_context::GlobalContext, profile_data::ProfileData, spotify_objects::{
+        artist::Artist, top_artists::TopArtists, top_tracks::TopTracks, track::Track, user::SpotifyUser
     }
 };
 
@@ -30,32 +24,57 @@ struct UserProfileFilename<'a> {
 
 #[component]
 pub fn Profile() -> impl IntoView {
-    let profile_data = create_resource(|| (), |_| async move {
-        from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await).unwrap_or_default()
-    });
+    let profile_data = expect_context::<RwSignal<GlobalContext>>();
 
-    let is_loading = profile_data.loading();
+    let (profile_loaded, set_profile_loaded) = create_slice(
+        profile_data,
+        |data| data.profile_loaded,
+        |data, value| data.profile_loaded = value,
+    );
 
-    log(format!("Is loaded: {:?}", is_loading.get()).as_str());
+    let is_loading = move || {
+        !profile_loaded.get()
+    };
 
     let profile_pic = move || {
-        if let Some(data) = profile_data.get() {
-            data.user.images.get(1).map_or(String::new(), |image| image.url.clone())
-        } else {
-            String::new()
+        match profile_data.try_get() {
+            Some(data) => data.profile.user.images.get(1).map_or_else(|| "".to_string(), |img| img.url.clone()),
+            None => {
+                log("Profile data not available");
+                "".to_string()
+            }
         }
     };
 
     let profile = move || {
-        profile_data.get().map_or(SpotifyUser::default(), |data| data.user.clone())
+        match profile_data.try_get() {
+            Some(data) => data.profile.user.clone(),
+            None => {
+                log("Profile data not available");
+                // Return a default value or handle the error appropriately
+                Default::default()
+            }
+        }
     };
 
     let top_tracks = move || {
-        profile_data.get().map_or(TopTracks::default(), |data| data.top_tracks.clone())
+        match profile_data.try_get() {
+            Some(data) => data.profile.top_tracks.clone(),
+            None => {
+                log("Profile data not available");
+                TopTracks::default() // Return an empty vector or handle the error appropriately
+            }
+        }
     };
 
     let top_artists = move || {
-        profile_data.get().map_or(TopArtists::default(), |data| data.top_artists.clone())
+        match profile_data.try_get() {
+            Some(data) => data.profile.top_artists.clone(),
+            None => {
+                log("Profile data not available");
+                TopArtists::default() // Return an empty vector or handle the error appropriately
+            }
+        }
     };
 
     view! {
@@ -63,7 +82,7 @@ pub fn Profile() -> impl IntoView {
             // Profile
             <div class="flex items-end">
                 <Transition fallback= move ||  {view! {<div class="rounded-full w-32 repsonsive-img skeleton"></div>}}>
-                    {move || if is_loading.get() {
+                    {move || if is_loading() {
                         view! {
                             <div class="skeleton rounded-full overflow-hidden">
                                 <img src="https://via.placeholder.com/150" alt="profile pic" class="object-cover opacity-0 responsive-img"></img>
@@ -88,7 +107,7 @@ pub fn Profile() -> impl IntoView {
                 <h2 class="text-2xl">"Popular artists"</h2>
                 
                 <Transition fallback = move || {view! {<div>"Loading"</div>}}>
-                    {move || if is_loading.get() {
+                    {move || if is_loading() {
                         view! {
                             <div class="carousel">
                                 {move || {
@@ -121,7 +140,7 @@ pub fn Profile() -> impl IntoView {
                 <h2 class="text-2xl">"Popular songs"</h2>
 
                 <Transition fallback = move || {view! {<div>"Loading"</div>}}>
-                    {move || if is_loading.get() {
+                    {move || if is_loading() {
                         view! {
                             <div class="grid grid-cols-1">
                                 {move || {

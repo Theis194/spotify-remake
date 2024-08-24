@@ -1,5 +1,6 @@
 pub mod shared {
     pub mod profile_data;
+    pub mod global_context;
 
     // Spotify objects
     pub mod spotify_objects {
