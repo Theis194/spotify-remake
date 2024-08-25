@@ -2,7 +2,7 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::*;
 use wasm_bindgen::prelude::*;
-use shared_lib::shared::spotify_objects::user::SpotifyUser;
+use shared_lib::shared::global_context::GlobalContext;
 
 #[wasm_bindgen]
 extern "C" {
@@ -24,26 +24,26 @@ struct UserProfileFilename<'a> {
 }
 
 pub fn Header() -> impl IntoView {
-    let (profile_pic, set_profile_pic) = create_signal(String::new());
+    let profile_data = expect_context::<RwSignal<GlobalContext>>();
 
-    spawn_local(async move {
-        let user_profile = from_value::<SpotifyUser>(invoke("get_user_profile", to_value(&UserProfileFilename{filename: "cache"}).unwrap()).await);
-        let url = user_profile.unwrap().images[0].url.clone();
-        log(&url);
-        set_profile_pic.set(url);
-    });
+    let (profile_loaded, set_profile_loaded) = create_slice(
+        profile_data,
+        |data| data.profile_loaded,
+        |data, value| data.profile_loaded = value,
+    );
 
-    // This function calls the current_search function in the main.rs file
-    // with the current search value
-    let current_search = move |ev| {
-        let args = to_value(&Search {
-            current: &event_target_value(&ev),
-        });
+    let is_loading = move || {
+        !profile_loaded.get()
+    };
 
-        // Spawn_local is needed to be able to run invoke
-        spawn_local(async move {
-            invoke("current_search", args.unwrap()).await;
-        })
+    let profile_pic = move || {
+        match profile_data.try_get() {
+            Some(data) => data.profile.user.images.get(1).map_or_else(|| "".to_string(), |img| img.url.clone()),
+            None => {
+                log("Profile data not available");
+                "".to_string()
+            }
+        }
     };
 
     view! {
@@ -64,7 +64,7 @@ pub fn Header() -> impl IntoView {
 
                     <a class="flex items-center transition duration-200 hover:text-primary" href="/search">
                         <div class="colored_search size-6 duration-200"></div>
-                        <input on:input=current_search type="text" class="w-full rounded-lg p-2 bg-transparent shadow-none focus:bg-neutral" placeholder="Search"/>
+                        <input /* on:input=current_search */ type="text" class="w-full rounded-lg p-2 bg-transparent shadow-none focus:bg-neutral" placeholder="Search"/>
                     </a>
                 </div>
 
@@ -78,8 +78,18 @@ pub fn Header() -> impl IntoView {
                     </a>
                     
                     <a href="/profile">
-                        <div class="size-6">
-                        <img id="profile_pic" alt="Profile picture" src={move || profile_pic.get()} tabindex="0" role="button" class="object-cover rounded-full"/>
+                        <div class="size-6 skeleton rounded-full">
+                            <Transition fallback= move ||  {view! {<div class="rounded-full w-32 repsonsive-img skeleton"></div>}}>
+                                {move || if is_loading() {
+                                    view! {
+                                        <img id="profile_pic" alt="Profile picture" src="https://via.placeholder.com/150" tabindex="0" role="button" class="object-cover opacity-0 rounded-full"/>
+                                    }
+                                } else {
+                                    view! {
+                                        <img id="profile_pic" alt="Profile picture" src={move || profile_pic()} tabindex="0" role="button" class="object-cover rounded-full"/>
+                                    }
+                                }}
+                            </Transition>
                         </div>
                     </a>
                 </div>

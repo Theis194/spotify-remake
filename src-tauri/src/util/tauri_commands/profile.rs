@@ -1,3 +1,5 @@
+use async_std::task::sleep;
+use std::time::Duration;
 use chrono::Utc;
 use shared_lib::shared::{
     profile_data::ProfileData, 
@@ -15,6 +17,8 @@ use crate::util::{
     }, 
     spotify_bb_error::BbError
 };
+
+use super::auth::is_user_authorized;
 
 #[tauri::command]
 pub fn get_user_profile(filename: String) -> Result<SpotifyUser, BbError> {
@@ -86,7 +90,11 @@ pub async fn get_profile_data() -> Result<ProfileData, BbError> {
     // Get the last request dates
     let last_request_top_tracks = *match config.get("last_request_top_tracks") {
         Some(last_request_top_tracks) => {
-            Some(last_request_top_tracks.get_date().unwrap())
+            if last_request_top_tracks.matches(&Value::Date(Utc::now())) {
+                Some(last_request_top_tracks.get_date().unwrap())
+            } else {
+                None
+            }
         }
         None => {
             None
@@ -95,7 +103,11 @@ pub async fn get_profile_data() -> Result<ProfileData, BbError> {
 
     let last_request_top_artists = *match config.get("last_request_top_artists") {
         Some(last_request_top_artists) => {
-            Some(last_request_top_artists.get_date().unwrap())
+            if last_request_top_artists.matches(&Value::Date(Utc::now())) {
+                Some(last_request_top_artists.get_date().unwrap())
+            } else {
+                None
+            }
         }
         None => {
             None

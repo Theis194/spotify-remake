@@ -1,6 +1,9 @@
 use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::*;
+use shared_lib::shared::global_context::GlobalContext;
+use shared_lib::shared::profile_data::ProfileData;
 use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::*;
+use wasm_bindgen::prelude::*;
 use leptos::*;
 use web_sys::window;
 use url::Url;
@@ -12,6 +15,9 @@ use crate::pages::page_util::authorized::is_authorized;
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }
 
 #[derive(Serialize, Deserialize)]
@@ -21,6 +27,8 @@ struct Code <'a> {
 
 #[component]
 pub fn Home() -> impl IntoView {
+    let profile_signal = expect_context::<RwSignal<GlobalContext>>();
+
     let query_params = get_query_params();
     let spotify_redirect = Rc::new(RefCell::new(false));
 
@@ -34,7 +42,8 @@ pub fn Home() -> impl IntoView {
                 spawn_local(async move {
                     *spotify_redirect_clone.borrow_mut() = true;
                     invoke("exchange_code", args).await;
-                    is_authorized()
+                    is_authorized();
+                    fetch_profile_data(profile_signal).await
                 });
             }
         }
@@ -42,8 +51,13 @@ pub fn Home() -> impl IntoView {
 
     if !*spotify_redirect.borrow() {
         is_authorized();
+        spawn_local(async move {
+            log("Fetching profile");
+            fetch_profile_data(profile_signal).await
+        });
     }
-
+    
+    
     view! {
         <div>
             <h1>Home</h1>
@@ -58,4 +72,14 @@ fn get_query_params() -> Option<Vec<(String, String)>> {
 
     let url = Url::parse(&href).expect("failed to parse url");
     Some(url.query_pairs().into_owned().collect())
+}
+
+async fn fetch_profile_data(profile_signal: RwSignal<GlobalContext>) {
+    let profile = from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await).unwrap_or_default();
+
+    profile_signal.set(GlobalContext {
+        profile,
+        profile_loaded: true,
+        currently_playing: None,
+    });
 }

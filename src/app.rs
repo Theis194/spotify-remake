@@ -6,8 +6,11 @@ use shared_lib::{
     shared::global_context::GlobalContext,
 };
 use wasm_bindgen::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::rc::Rc;
 use std::cell::RefCell;
+use web_sys::window;
+use url::Url;
 
 use crate::{
     ui_elements::{
@@ -34,6 +37,11 @@ use crate::{
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+}
+
+#[derive(Serialize, Deserialize)]
+struct Code <'a> {
+    code: &'a str,
 }
 
 #[component]
@@ -90,6 +98,15 @@ pub fn App() -> impl IntoView {
             </Router>
         </div>
     }
+}
+
+fn get_query_params() -> Option<Vec<(String, String)>> {
+    let window = window().expect("no global `window` exists");
+    let location = window.location();
+    let href = location.href().expect("failed to get href");
+
+    let url = Url::parse(&href).expect("failed to parse url");
+    Some(url.query_pairs().into_owned().collect())
 }
 
 fn Modal() -> impl IntoView {

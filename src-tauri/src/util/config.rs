@@ -127,6 +127,21 @@ pub enum Value {
 
 // Value methods
 impl Value {
+    pub fn matches(&self, other: &Value) -> bool {
+        use Value::*;
+
+        match (self, other) {
+            (String(_), String(_)) => true,
+            (Bool(_), Bool(_)) => true,
+            (Date(_), Date(_)) => true,
+            (AuthResponse(_), AuthResponse(_)) => true,
+            (SpotifyUser(_), SpotifyUser(_)) => true,
+            (TopTracks(_), TopTracks(_)) => true,
+            (TopArtists(_), TopArtists(_)) => true,
+            _ => false
+        }
+    }
+    
     // Getters
     pub fn get_string(&self) -> Option<&String> {
         match self {

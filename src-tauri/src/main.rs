@@ -71,6 +71,8 @@ async fn setup() {
     let mut config = Config::new()
         .try_read("cache".to_string()).expect("Failed to read config")
         .set_if_not_exists("auth_token".to_string(), Value::String("".to_string()))
+        .set_if_not_exists("last_request_top_tracks".to_string(), Value::Date(Utc::now() - chrono::Duration::days(1)))
+        .set_if_not_exists("last_request_top_artists".to_string(), Value::Date(Utc::now() - chrono::Duration::days(1)))
         .write()
         .expect("Failed to write config");
 
