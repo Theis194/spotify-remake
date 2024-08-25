@@ -11,6 +11,9 @@ pub mod shared {
         pub mod image;
         pub mod top_tracks;
         pub mod top_artists;
+        pub mod player;
+        pub mod episode;
+        pub mod show;
 
         pub mod simplified {
             pub mod artist;
@@ -24,5 +27,11 @@ pub mod shared {
         pub mod external_ids;
         pub mod restrictions;
         pub mod linked_from;
+        pub mod device;
+        pub mod context;
+        pub mod item;
+        pub mod resume_point;
+        pub mod copyrights;
+        pub mod action;
     }
 }

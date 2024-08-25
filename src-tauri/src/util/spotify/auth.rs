@@ -71,7 +71,7 @@ pub fn get_authorization_url(client_id: &str, redirect_uri: &str) -> String {
         .set("code_verifier".to_string(), Value::String(code_verifier))
         .write();
 
-    let scopes = "user-read-private%20user-read-email%20user-top-read%20playlist-read-private";
+    let scopes = "user-read-private%20user-read-email%20user-top-read%20playlist-read-private%20user-read-playback-state%20user-modify-playback-state";
 
     format!(
         "https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope={}&redirect_uri={}&code_challenge_method=S256&code_challenge={}",
