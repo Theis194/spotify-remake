@@ -1,11 +1,48 @@
 use leptos::*;
+use shared_lib::shared::global_context::GlobalContext;
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+extern "C" {
+    fn playMusic(spotify_uri: &str, device_id: &str, acces_token: &str);
+
+    fn getDeviceId() -> JsValue;
+
+    fn pauseMusic(device_id: &str, acces_token: &str);
+}
 
 #[component]
 pub fn Footer() -> impl IntoView {
+    let global_context = expect_context::<RwSignal<GlobalContext>>();
+
     let (play, set_play) = create_signal(false);
+
+    let acces_token = move || {
+        match global_context.try_get() {
+            Some(data) => data.acces_token.clone(),
+            None => {
+                "".to_string()
+            }
+        }
+    };
+
+    let device_id = move || {
+        match get_spotify_device_id() {
+            Some(data) => data,
+            None => {
+                "".to_string()
+            }
+        }
+    };
 
     let play_pause = move |_| {
         set_play.set(!play.get());
+
+        if play.get() {
+            playMusic("", &device_id(), &acces_token());
+        } else {
+            pauseMusic(&device_id(), &acces_token());
+        }
     };
 
     view! {
@@ -55,4 +92,11 @@ pub fn Footer() -> impl IntoView {
             </div>
         </footer>
     }
+}
+
+fn get_spotify_device_id() -> Option<String> {
+    let device_id = getDeviceId();
+
+    // Convert `JsValue` to a `String`, if it exists
+    device_id.as_string()
 }

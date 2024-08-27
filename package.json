@@ -4,5 +4,8 @@
     },
     "devDependencies": {
         "daisyui": "^4.12.10"
+    },
+    "dependencies": {
+        "tauri": "^0.15.0"
     }
 }

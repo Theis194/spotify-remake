@@ -52,7 +52,6 @@ pub fn Home() -> impl IntoView {
     if !*spotify_redirect.borrow() {
         is_authorized();
         spawn_local(async move {
-            log("Fetching profile");
             fetch_profile_data(profile_signal).await
         });
     }
@@ -81,5 +80,6 @@ async fn fetch_profile_data(profile_signal: RwSignal<GlobalContext>) {
         profile,
         profile_loaded: true,
         currently_playing: None,
+        acces_token: profile_signal.get().acces_token.clone()
     });
 }

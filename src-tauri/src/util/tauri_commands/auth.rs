@@ -9,7 +9,7 @@ use crate::{util::{
         Value,
     }, spotify::{
         auth::{
-            exchange_code_for_token, get_authorization_url, AuthResponse
+            exchange_code_for_token, get_authorization_url, refresh_auth_token, AuthResponse
         },
             util::request_user_profile,
     }, spotify_bb_error::BbError
@@ -88,4 +88,36 @@ pub async fn exchange_code(code: &str, appdata: State<'_, Mutex<AppData>>) -> Re
         .expect("Failed to write config");
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_auth_token() -> String {
+    let config = Config::new()
+        .set_filename("cache".to_string())
+        .read()
+        .expect("Could not read cache");
+
+    let auth_token_expire = config.get("auth_token_expires")
+        .expect("Could not find auth_token_expires")
+        .get_date()
+        .expect("Could not get date")
+        .clone();
+
+    let acces_token = if Utc::now() > auth_token_expire {
+        let _ = refresh_auth_token().await;
+
+        config.get("auth_token")
+            .expect("Could not find auth_token")
+            .get_auth_response()
+            .expect("Could not get Authresponse")
+            .access_token.clone()
+    } else {
+        config.get("auth_token")
+            .expect("Could not find auth_token")
+            .get_auth_response()
+            .expect("Could not get Authresponse")
+            .access_token.clone()
+    };
+
+    acces_token
 }

@@ -5,4 +5,5 @@ pub struct GlobalContext {
     pub profile: ProfileData,
     pub profile_loaded: bool,
     pub currently_playing: Option<Track>,
+    pub acces_token: String,
 }

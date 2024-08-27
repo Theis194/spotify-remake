@@ -50,6 +50,7 @@ pub fn App() -> impl IntoView {
         profile: ProfileData::default(),
         profile_loaded: false,
         currently_playing: None,
+        acces_token: "".to_string(),
     });
 
     provide_context(profile_signal);
@@ -58,10 +59,12 @@ pub fn App() -> impl IntoView {
         let profile_signal = profile_signal.clone();
         async move {
             let profile = from_value::<ProfileData>(invoke("get_profile_data", JsValue::NULL).await).unwrap_or_default();
+            let acces_token = from_value::<String>(invoke("get_auth_token", JsValue::NULL).await).unwrap_or_default();
             profile_signal.set(GlobalContext {
                 profile,
                 profile_loaded: true,
                 currently_playing: None,
+                acces_token,
             });
         }
     });
