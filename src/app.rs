@@ -72,10 +72,10 @@ pub fn App() -> impl IntoView {
                 <div class="min-h-screen grid grid-cols-[auto_1fr]">
                     <SideNav/>
 
-                    <div class="grid grid-rows-[auto, 1fr, auto] gap-2 w-full text-2xl font-bold px-2 h-screen">
+                    <div class="grid grid-rows-[auto_1fr_auto] gap-2 w-full text-2xl font-bold px-2 h-screen">
                         <Header/>
 
-                        <div class="border border-neutral-content rounded px-2 py-2 overflow-y-scroll hide-scroll-bar">
+                        <div class="border border-neutral-content rounded px-2 py-2  overflow-y-scroll hide-scroll-bar">
                             <Routes>
                                 <Route path="/" ssr=SsrMode::OutOfOrder view=Home/>
                                 <Route path="/myLibrary" ssr=SsrMode::OutOfOrder view=MyLibrary/>

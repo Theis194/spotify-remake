@@ -11,7 +11,6 @@ pub mod shared {
         pub mod image;
         pub mod top_tracks;
         pub mod top_artists;
-        pub mod player;
         pub mod episode;
         pub mod show;
 

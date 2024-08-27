@@ -1,5 +1,3 @@
-use async_std::task::sleep;
-use std::time::Duration;
 use chrono::Utc;
 use shared_lib::shared::{
     profile_data::ProfileData, 
@@ -17,8 +15,6 @@ use crate::util::{
     }, 
     spotify_bb_error::BbError
 };
-
-use super::auth::is_user_authorized;
 
 #[tauri::command]
 pub fn get_user_profile(filename: String) -> Result<SpotifyUser, BbError> {

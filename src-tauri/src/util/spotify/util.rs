@@ -1,6 +1,8 @@
 use reqwest::header::AUTHORIZATION;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+use serde_json::Deserializer;
+use serde_path_to_error::deserialize;
 use shared_lib::shared::spotify_objects::user::SpotifyUser;
 
 use crate::util::spotify_bb_error::BbError;
@@ -48,8 +50,12 @@ where
 
     let response_text = response.text().await.unwrap();
 
-    let deserialized_response: T = serde_json::from_str(&response_text)
-        .map_err(|e| BbError::DeserializationError(e.to_string()))?;
+    let deserializer = &mut Deserializer::from_str(&response_text);
+    let deserialized_response: T = deserialize(deserializer)
+        .map_err(|e| {
+            let path = e.path().to_string();
+            BbError::DeserializationError(format!("Error at {}: {}", path, e))
+        })?;
 
     Ok(deserialized_response)
 }
