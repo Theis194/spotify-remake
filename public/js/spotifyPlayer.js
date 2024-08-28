@@ -3,7 +3,7 @@ const invoke = window.__TAURI__.invoke
 async function initializeSpotifyPlayer() {
     const token = await invoke("get_auth_token");
     const player = new Spotify.Player({
-        name: 'SpotifyBB Player',
+        name: 'SpotifyBB',
         getOAuthToken: cb => {cb(token);},
         volume: 0.5
     });
@@ -82,13 +82,97 @@ function pause(device_id, access_token) {
     });
 }
 
-function get_device_id(){
-    console.log(window.spotifyDeviceId)
+function next(device_id, access_token) {
+    fetch(`https://api.spotify.com/v1/me/player/next?device_id=${device_id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            console.log('Playback started');
+        } else {
+            console.error('Playback failed');
+        }
+    });
+}
 
+function previous(device_id, access_token) {
+    fetch(`https://api.spotify.com/v1/me/player/previous?device_id=${device_id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            console.log('Playback started');
+        } else {
+            console.error('Playback failed');
+        }
+    });
+}
+
+function shuffle(device_id, access_token, shuffle) {
+    fetch(`https://api.spotify.com/v1/me/player/shuffle?device_id=${device_id}&state=${shuffle}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            console.log('Playback started');
+        } else {
+            console.error('Playback failed');
+        }
+    });
+}
+
+function repeat(device_id, access_token, state) {
+    fetch(`https://api.spotify.com/v1/me/player/repeat?device_id=${device_id}&state=${state}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            console.log('Playback started');
+        } else {
+            console.error('Playback failed');
+        }
+    });
+}
+
+function volume(device_id, access_token, volume) {
+    volume = Math.min(100, Math.max(0, volume));
+    fetch(`https://api.spotify.com/v1/me/player/volume?device_id=${device_id}&volume_percent=${volume}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            console.log('Playback started');
+        } else {
+            console.error('Playback failed');
+        }
+    });
+}
+
+function get_device_id(){
     return window.spotifyDeviceId;
 }
 
 window.onSpotifyWebPlaybackSDKReady = initializeSpotifyPlayer;
 window.playMusic = play; // Expose the play function globally
 window.pauseMusic = pause;
+window.nextMusic = next;
+window.previousMusic = previous;
+window.shuffleMusic = shuffle;
+window.repeatMusic = repeat;
+window.volumeMusic = volume;
 window.getDeviceId = get_device_id;

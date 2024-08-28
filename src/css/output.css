@@ -1709,11 +1709,6 @@ html {
   height: 3.5rem;
 }
 
-.h-fit {
-  height: -moz-fit-content;
-  height: fit-content;
-}
-
 .h-full {
   height: 100%;
 }
@@ -1765,10 +1760,6 @@ html {
 
 .flex-none {
   flex: none;
-}
-
-.flex-grow {
-  flex-grow: 1;
 }
 
 .grow {
@@ -2276,6 +2267,13 @@ a:hover .colored_settings {
   -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
 }
 
+.colored_shuffle_activated {
+  background-color: var(--fallback-nc,oklch(var(--nc)/1));
+  /* defines the background color of the image */
+  mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+}
+
 .colored_shuffle:hover {
   background-color: var(--fallback-nc,oklch(var(--nc)/1));
   mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
@@ -2284,6 +2282,13 @@ a:hover .colored_settings {
 
 .colored_loop {
   background-color: var(--fallback-b1,oklch(var(--b1)/1));
+  /* defines the background color of the image */
+  mask: url(../../public/img/loop.svg) no-repeat center / contain;
+  -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
+}
+
+.colored_loop_activated {
+  background-color: var(--fallback-nc,oklch(var(--nc)/1));
   /* defines the background color of the image */
   mask: url(../../public/img/loop.svg) no-repeat center / contain;
   -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;

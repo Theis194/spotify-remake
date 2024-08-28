@@ -215,6 +215,12 @@ a:hover .colored_settings {
     -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
 }
 
+.colored_shuffle_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
+}
+
 .colored_shuffle:hover {
     background-color: theme('colors.neutral-content');
     mask: url(../../public/img/shuffle.svg) no-repeat center / contain;
@@ -223,6 +229,12 @@ a:hover .colored_settings {
 
 .colored_loop {
     background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/loop.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
+}
+
+.colored_loop_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
     mask: url(../../public/img/loop.svg) no-repeat center / contain;
     -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
 }
