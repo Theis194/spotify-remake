@@ -3,6 +3,7 @@
 mod app;
 mod ui_elements;
 mod pages;
+mod spotify_player;
 
 
 use app::*;
