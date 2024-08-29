@@ -6,8 +6,6 @@ use super::spotify_objects::{
     user::SpotifyUser
 };
 
-
-
 // Spotify User object
 #[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
 

@@ -1,5 +1,6 @@
 use reqwest::Client;
 use serde_json::{json, Value};
+use shared_lib::shared::recently_played::RecentlyPlayed;
 use std::error::Error;
 use leptos::logging::log;
 
@@ -153,16 +154,17 @@ pub async fn volume(device_id: &str, access_token: &str, volume: u8) -> Result<(
     Ok(())
 }
 
-pub async fn get_last_played_track(token: &str) -> Result<(), Box<dyn Error>> {
+pub async fn get_last_played_track(token: &str) -> Option<RecentlyPlayed> {
     let client = Client::new();
     let res = client
         .get("https://api.spotify.com/v1/me/player/recently-played")
         .bearer_auth(token)
         .send()
-        .await?;
+        .await
+        .ok()?;
 
-    let body = res.text().await?;
-    let json: Value = serde_json::from_str(&body)?;
+    let body = res.text().await.ok()?;
+    let json: Value = serde_json::from_str(&body).ok()?;
 
     if let Some(items) = json["items"].as_array() {
         if let Some(last_played) = items.first() {
@@ -175,9 +177,21 @@ pub async fn get_last_played_track(token: &str) -> Result<(), Box<dyn Error>> {
                 .map(|artist| artist["name"].as_str().unwrap_or("Unknown"))
                 .collect::<Vec<&str>>()
                 .join(", ");
-            log!("Last played track: {} by {}", track_name, artists);
+            let duration_ms = track["duration_ms"].as_i64().unwrap_or(0);
+            let image_url = track["album"]["images"]
+                .as_array()
+                .and_then(|images| images.last())
+                .and_then(|image| image["url"].as_str())
+                .unwrap_or("No image");
+
+            return Some(RecentlyPlayed {
+                track_name: track_name.to_string(),
+                artists: artists.to_string(),
+                duration_ms: duration_ms as i32,
+                image_url: image_url.to_string(),
+            });
         }
     }
 
-    Ok(())
+    None
 }

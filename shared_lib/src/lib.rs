@@ -2,6 +2,7 @@ pub mod shared {
     pub mod profile_data;
     pub mod global_context;
     pub mod track_state;
+    pub mod recently_played;
 
     // Spotify objects
     pub mod spotify_objects {

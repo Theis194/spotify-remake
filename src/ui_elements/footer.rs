@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos::logging::log;
 use rust_spotify_web_playback_sdk::prelude as sp;
-use shared_lib::shared::{global_context::GlobalContext, track_state::TrackInfo};
+use shared_lib::shared::{global_context::GlobalContext, recently_played::RecentlyPlayed, track_state::TrackInfo};
 
 use crate::spotify_player::requests::*;
 
@@ -19,8 +19,8 @@ pub fn Footer() -> impl IntoView {
     let (is_playing, set_is_playing) = create_signal(false);
     let (should_repeat, set_should_repeat) = create_signal(false);
     let (is_shuffling, set_is_shuffling) = create_signal(false);
-    let (track_info, set_track_info) = create_signal(TrackInfo::default());
     
+    let (track_info, set_track_info) = create_signal(TrackInfo::default());
 
     let connect = create_action(|_| async {
         log!("Connecting to Spotify");
@@ -78,12 +78,6 @@ pub fn Footer() -> impl IntoView {
             );
         }
     });
-
-    /* let last_played = move || {
-        spawn_local(async move {
-            let _ = get_last_played_track(&acces_token()).await;
-        })
-    }; */
 
     let activate_player = create_action(|_| async {
         let _ = sp::activate_element().await;
@@ -146,11 +140,25 @@ pub fn Footer() -> impl IntoView {
                     
                 } else {
                     activate_player.dispatch(());
+                    spawn_local(async move {
+                        let last_played = get_last_played_track(&acces_token.get()).await.expect("Error getting last played track");
+
+                        let track_info = TrackInfo {
+                            artists: last_played.artists,
+                            name: last_played.track_name.clone(),
+                            album: "".to_string(),
+                            duration: last_played.duration_ms,
+                            image: last_played.image_url,
+                            uri: "".to_string(),
+                            position: 0,
+                            paused: false,
+                            shuffle: false,
+                        };
+
+                        set_track_info.set(track_info);
+                    })
                 }}
             </Transition>
-            /* {move || {
-                last_played();
-            }} */
             <div class="grid grid-cols-[auto_1fr_auto] items-center">
                 <div class="flex flex-row gap-4 items-center">
                     <img src={move || {track_info.get().image}} class="rounded w-14 h-14" />
@@ -207,7 +215,9 @@ pub fn Footer() -> impl IntoView {
                         <span class="text-sm">{move || {
                             format_time(track_info.get().position)
                         }}</span>
+                        
                         <input type="range" min="0" max="100" value="40" class="range range-success range-xs responsive-input" />
+                        
                         <span class="text-sm">{move || {
                             format_time(track_info.get().duration)
                         }}</span>
