@@ -11,4 +11,5 @@ pub struct TrackInfo {
     pub position: i32,
     pub paused: bool,
     pub shuffle: bool,
+    pub timestamp: i64,
 }

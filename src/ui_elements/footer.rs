@@ -1,7 +1,9 @@
 use leptos::*;
 use leptos::logging::log;
+use std::time::{Duration, Instant};
+use gloo::timers::callback::Interval;
 use rust_spotify_web_playback_sdk::prelude as sp;
-use shared_lib::shared::{global_context::GlobalContext, recently_played::RecentlyPlayed, track_state::TrackInfo};
+use shared_lib::shared::{global_context::GlobalContext, track_state::TrackInfo};
 
 use crate::spotify_player::requests::*;
 
@@ -23,8 +25,6 @@ pub fn Footer() -> impl IntoView {
     let (track_info, set_track_info) = create_signal(TrackInfo::default());
 
     let connect = create_action(|_| async {
-        log!("Connecting to Spotify");
-
         match sp::connect().await {
             Ok(_) => log!("Connected to Spotify"),
             Err(e) => log!("Error connecting to Spotify: {:?}", e),
@@ -37,26 +37,26 @@ pub fn Footer() -> impl IntoView {
         } else {
             sp::init(
                 move || {
-                    log!("access token: {:?}", acces_token.get());
                     acces_token.get().clone()
                 }, 
                 move || {
                     log!("Player ready");
                     connect.dispatch(());
     
-                    sp::add_listener!("player_state_changed", move |state: sp::StateChange| {
+                    let _ = sp::add_listener!("player_state_changed", move |state: sp::StateChange| {
                         let track = state.track_window.current_track;
     
                         let track_info = TrackInfo {
                             artists: track.artists.iter().map(|a| a.name.clone()).collect::<Vec<String>>().join(", "),
                             name: track.name.clone(),
                             album: track.album.name.clone(),
-                            duration: track.duration_ms,
+                            duration: track.duration_ms as i32,
                             image: track.album.images.first().unwrap().url.clone(),
                             uri: track.uri.clone(),
                             position: state.position,
-                            paused: false,
+                            paused: state.paused,
                             shuffle: state.shuffle,
+                            timestamp: state.timestamp,
                         };
     
                         log!("Player state changed: {:?}", track_info.clone());
@@ -65,7 +65,7 @@ pub fn Footer() -> impl IntoView {
     
                     });
     
-                    sp::add_listener!("ready", move |ready: sp::Player| {
+                    let _ = sp::add_listener!("ready", move |ready: sp::Player| {
                         let id = ready.device_id.to_string();
                         set_device_id.set(id.clone());
     
@@ -133,16 +133,48 @@ pub fn Footer() -> impl IntoView {
         })
     };
 
+    let update_progress = move || {
+        if is_playing.get_untracked() == false {
+            return;
+        }
+
+        if track_info.get().timestamp == 0 {
+            return;
+        }
+        let mut info = track_info.get().clone();
+        let current_time = js_sys::Date::now() as i64;
+        let elapsed_time = current_time - info.timestamp;
+        log!("Current time: {:?}", current_time);
+        log!("Timestamp: {:?}", info.timestamp);
+        log!("Elapsed time: {:?}", elapsed_time);
+
+        let new_position = info.position + elapsed_time as i32;
+
+        if new_position > info.duration {
+            info.position = info.duration;
+        } else {
+            info.position = new_position;
+        }
+
+        info.timestamp = current_time;
+        log!("Updated position: {:?}", info.position);
+
+        set_track_info.set(info);
+    };
+
+    let _interval = Interval::new(1_000, move || {
+        update_progress();
+    }).forget();
+
     view! {
         <footer class="w-full bg-neutral p-2">
             <Transition>
                 {move || if acces_token.get().is_empty() {
-                    
                 } else {
                     activate_player.dispatch(());
                     spawn_local(async move {
                         let last_played = get_last_played_track(&acces_token.get()).await.expect("Error getting last played track");
-
+                        
                         let track_info = TrackInfo {
                             artists: last_played.artists,
                             name: last_played.track_name.clone(),
@@ -153,8 +185,9 @@ pub fn Footer() -> impl IntoView {
                             position: 0,
                             paused: false,
                             shuffle: false,
+                            timestamp: 0,
                         };
-
+                        
                         set_track_info.set(track_info);
                     })
                 }}
@@ -216,7 +249,7 @@ pub fn Footer() -> impl IntoView {
                             format_time(track_info.get().position)
                         }}</span>
                         
-                        <input type="range" min="0" max="100" value="40" class="range range-success range-xs responsive-input" />
+                        <input type="range" min="0" max=move || {track_info.get().duration.to_string()} value=move || {track_info.get().position.to_string()} class="range range-success range-xs responsive-input" />
                         
                         <span class="text-sm">{move || {
                             format_time(track_info.get().duration)

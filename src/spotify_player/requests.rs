@@ -2,7 +2,6 @@ use reqwest::Client;
 use serde_json::{json, Value};
 use shared_lib::shared::recently_played::RecentlyPlayed;
 use std::error::Error;
-use leptos::logging::log;
 
 pub async fn play(spotify_uri: &str, device_id: &str, access_token: &str) -> Result<(), Box<dyn Error>> {
     let client = Client::new();
