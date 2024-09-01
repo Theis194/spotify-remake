@@ -1,6 +1,5 @@
 use leptos::*;
 use leptos::logging::log;
-use std::time::{Duration, Instant};
 use gloo::timers::callback::Interval;
 use rust_spotify_web_playback_sdk::prelude as sp;
 use shared_lib::shared::{global_context::GlobalContext, track_state::TrackInfo};
@@ -94,29 +93,29 @@ pub fn Footer() -> impl IntoView {
     });
 
     let play_pause = move |_| {
-        set_is_playing.set(!is_playing.get());
+        set_is_playing.set(!is_playing.get_untracked());
 
-        if is_playing.get() {
+        if is_playing.get_untracked() {
             spawn_local(async move {
-                let _ = play("", &device_id.get(), &acces_token.get()).await;
+                let _ = play("", &device_id.get_untracked(), &acces_token.get_untracked()).await;
             })
         } else {
             spawn_local(async move {
-                let _ = pause(&device_id.get(), &acces_token.get()).await;
+                let _ = pause(&device_id.get_untracked(), &acces_token.get_untracked()).await;
             })
         }
     };
 
     let repeat_fn = move |_| {
-        set_should_repeat.set(!should_repeat.get());
+        set_should_repeat.set(!should_repeat.get_untracked());
 
-        if should_repeat.get() {
+        if should_repeat.get_untracked() {
             spawn_local(async move {
-                let _ = repeat(&device_id.get(), &acces_token.get(), "context").await;
+                let _ = repeat(&device_id.get_untracked(), &acces_token.get_untracked(), "context").await;
             })
         } else {
             spawn_local(async move {
-                let _ = repeat(&device_id.get(), &acces_token.get(), "off").await;
+                let _ = repeat(&device_id.get_untracked(), &acces_token.get_untracked(), "off").await;
             })
         }
     };
@@ -139,7 +138,14 @@ pub fn Footer() -> impl IntoView {
     let previous = move |_| {
         set_is_playing.set(true);
         spawn_local(async move {
-            let _ = previous(&device_id.get(), &acces_token.get()).await;
+            let _ = previous(&device_id.get_untracked(), &acces_token.get_untracked()).await;
+        })
+    };
+
+    let volume_change = move |ev| {
+        let audioLevel: u8 = event_target_value(&ev).parse().unwrap();
+        spawn_local(async move {
+            let _ = volume(&device_id.get_untracked(), &acces_token.get_untracked(), audioLevel).await;
         })
     };
 
@@ -148,10 +154,10 @@ pub fn Footer() -> impl IntoView {
             return;
         }
 
-        if track_info.get().timestamp == 0 {
+        if track_info.get_untracked().timestamp == 0 {
             return;
         }
-        let mut info = track_info.get().clone();
+        let mut info = track_info.get_untracked().clone();
         let current_time = js_sys::Date::now() as i64;
         let elapsed_time = current_time - info.timestamp;
 
@@ -264,11 +270,23 @@ pub fn Footer() -> impl IntoView {
                 </div>
                 
                 <div class="flex flex-row">
-                    <div class="colored_shuffle size-6"></div>
-                    <div class="colored_shuffle size-6"></div>
-                    <div class="colored_shuffle size-6"></div>
-                    <div class="colored_shuffle size-6"></div>
-                    <div class="colored_shuffle size-6"></div>
+                    <div class="dropdown dropdown-top">
+                        <label tabindex="0" class="cursor-pointer">
+                            <div class="colored_volume size-7"></div>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content pl-2 rounded-box">
+                            <li>
+                                <div class="h-32 flex justify-center items-center">
+                                    <input on:change=volume_change type="range" min="0" max="100" value="50" step="1" orient="vertical" class="h-full"/>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="colored_heart size-7"></div>
+                    <div class="colored_devices size-7"></div>
+                    <div class="colored_add_playlist size-7"></div>
+                    <div class="colored_more size-7"></div>
+                    <div class="colored_queue size-7"></div>
                 </div>
             </div>
         </footer>

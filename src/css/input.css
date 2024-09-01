@@ -17,6 +17,13 @@
     scrollbar-width: none;
 }
 
+input[type="range"][orient="vertical"] {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 8px;
+    vertical-align: bottom;
+}
+
 .colored_library {
     background-color: theme('colors.neutral-content'); /* defines the background color of the image */
     mask: url(../../public/img/library.svg) no-repeat center / contain;
@@ -243,4 +250,130 @@ a:hover .colored_settings {
     background-color: theme('colors.neutral-content');
     mask: url(../../public/img/loop.svg) no-repeat center / contain;
     -webkit-mask: url(../../public/img/loop.svg) no-repeat center / contain;
+}
+
+.colored_heart {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/heart.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/heart.svg) no-repeat center / contain;
+}
+
+.colored_heart_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/heart.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/heart.svg) no-repeat center / contain;
+}
+
+.colored_heart:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/heart.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/heart.svg) no-repeat center / contain;
+}
+
+.colored_queue {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/queue.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/queue.svg) no-repeat center / contain;
+}
+
+.colored_queue_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/queue.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/queue.svg) no-repeat center / contain;
+}
+
+.colored_queue:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/queue.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/queue.svg) no-repeat center / contain;
+}
+
+.colored_more {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/more.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/more.svg) no-repeat center / contain;
+}
+
+.colored_more_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/more.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/more.svg) no-repeat center / contain;
+}
+
+.colored_more:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/more.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/more.svg) no-repeat center / contain;
+}
+
+.colored_volume {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/volume.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/volume.svg) no-repeat center / contain;
+}
+
+.colored_volume_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/volume.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/volume.svg) no-repeat center / contain;
+}
+
+.colored_volume:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/volume.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/volume.svg) no-repeat center / contain;
+}
+
+.colored_mute {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/mute.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/mute.svg) no-repeat center / contain;
+}
+
+.colored_mute_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/mute.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/mute.svg) no-repeat center / contain;
+}
+
+.colored_mute:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/mute.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/mute.svg) no-repeat center / contain;
+}
+
+.colored_devices {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/devices.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/devices.svg) no-repeat center / contain;
+}
+
+.colored_devices_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/devices.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/devices.svg) no-repeat center / contain;
+}
+
+.colored_devices:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/devices.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/devices.svg) no-repeat center / contain;
+}
+
+.colored_add_playlist {
+    background-color: theme('colors.base-100'); /* defines the background color of the image */
+    mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
+}
+
+.colored_add_playlist_activated {
+    background-color: theme('colors.neutral-content'); /* defines the background color of the image */
+    mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
+}
+
+.colored_add_playlist:hover {
+    background-color: theme('colors.neutral-content');
+    mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
+    -webkit-mask: url(../../public/img/add_playlist.svg) no-repeat center / contain;
 }

@@ -1,3 +1,4 @@
+use leptos::logging::log;
 use reqwest::Client;
 use serde_json::{json, Value};
 use shared_lib::shared::recently_played::RecentlyPlayed;
