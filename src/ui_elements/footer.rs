@@ -30,6 +30,7 @@ pub fn Footer() -> impl IntoView {
 
     let (should_repeat, set_should_repeat) = create_signal(false);
     let (is_shuffling, set_is_shuffling) = create_signal(false);
+    let (mute, set_mute) = create_signal(false);
     
     let (track_info, set_track_info) = create_signal(TrackInfo::default());
 
@@ -144,6 +145,13 @@ pub fn Footer() -> impl IntoView {
 
     let volume_change = move |ev| {
         let audioLevel: u8 = event_target_value(&ev).parse().unwrap();
+        
+        if audioLevel == 0 {
+            set_mute.set(true);
+        } else {
+            set_mute.set(false);
+        }
+
         spawn_local(async move {
             let _ = volume(&device_id.get_untracked(), &acces_token.get_untracked(), audioLevel).await;
         })
@@ -272,7 +280,12 @@ pub fn Footer() -> impl IntoView {
                 <div class="flex flex-row">
                     <div class="dropdown dropdown-top">
                         <label tabindex="0" class="cursor-pointer">
-                            <div class="colored_volume size-7"></div>
+                            <div class=move || {
+                            if mute.get() {
+                                "colored_mute size-7"
+                            } else {
+                                "colored_volume size-7"
+                            }}></div>
                         </label>
                         <ul tabindex="0" class="dropdown-content pl-2 rounded-box">
                             <li>
