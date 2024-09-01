@@ -3,10 +3,12 @@ use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::*;
 use wasm_bindgen::prelude::*;
 use shared_lib::shared::{
-    global_context::GlobalContext, profile_data::ProfileData, spotify_objects::{
-        artist::Artist, top_artists::TopArtists, top_tracks::TopTracks, track::Track, user::SpotifyUser
+    global_context::GlobalContext,  spotify_objects::{
+        artist::Artist, top_artists::TopArtists, top_tracks::TopTracks, track::Track,
     }
 };
+
+use crate::spotify_player::requests::play;
 
 #[wasm_bindgen]
 extern "C" {
@@ -187,8 +189,38 @@ fn song_list_item(song: &Track) -> impl IntoView {
     let album_name = song.album.name.clone();
     let duration = format_time(song.duration_ms);
 
+    let song_clone = song.clone();
+    let click_song = move |_| {
+        let global_context = expect_context::<RwSignal<GlobalContext>>();
+        
+        let (access_token, set_access_token) = create_slice(
+            global_context,
+            |data| data.access_token.clone(),
+            |data, value| data.access_token = value,
+        );
+
+        let (device_id, set_device_id) = create_slice(
+            global_context, 
+            |data| data.device_id.clone(), 
+            |data, value| data.device_id = value,
+        );
+
+        let (is_playing, set_is_playing) = create_slice(
+            global_context, 
+            |data| data.is_playing.clone(), 
+            |data, value| data.is_playing = value,
+        );
+
+        let song = song_clone.clone();
+        spawn_local(async move {
+            let _ = play(&song.uri.clone(), &device_id.get().clone(), &access_token.get().clone()).await;
+        });
+
+        set_is_playing.set(true);
+    };
+
     view! {
-        <div class="flex justify-between items-center bg-base-100 rounded px-2 py-2 hover:bg-neutral">
+        <div on:click=click_song class="flex justify-between items-center bg-base-100 rounded px-2 py-2 hover:bg-neutral">
             <div class="flex w-3/5 items-center">
                 <img src={album_img} class="size-8"/>
                 <div class="px-4">

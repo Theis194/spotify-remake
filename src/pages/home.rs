@@ -80,6 +80,8 @@ async fn fetch_profile_data(profile_signal: RwSignal<GlobalContext>) {
         profile,
         profile_loaded: true,
         currently_playing: None,
-        acces_token: profile_signal.get().acces_token.clone()
+        access_token: profile_signal.get().access_token.clone(),
+        device_id: "".to_string(),
+        is_playing: false,
     });
 }

@@ -13,12 +13,22 @@ pub fn Footer() -> impl IntoView {
 
     let (acces_token, set_acces_token) = create_slice(
         global_context,
-        |data| data.acces_token.clone(),
-        |data, value| data.acces_token = value,
+        |data| data.access_token.clone(),
+        |data, value| data.access_token = value,
     );
 
-    let (device_id, set_device_id) = create_signal(String::new());
-    let (is_playing, set_is_playing) = create_signal(false);
+    let (device_id, set_device_id) = create_slice(
+        global_context, 
+        |data| data.device_id.clone(), 
+        |data, value| data.device_id = value,
+    );
+
+    let (is_playing, set_is_playing) = create_slice(
+        global_context, 
+        |data| data.is_playing.clone(), 
+        |data, value| data.is_playing = value,
+    );
+
     let (should_repeat, set_should_repeat) = create_signal(false);
     let (is_shuffling, set_is_shuffling) = create_signal(false);
     
@@ -144,9 +154,6 @@ pub fn Footer() -> impl IntoView {
         let mut info = track_info.get().clone();
         let current_time = js_sys::Date::now() as i64;
         let elapsed_time = current_time - info.timestamp;
-        log!("Current time: {:?}", current_time);
-        log!("Timestamp: {:?}", info.timestamp);
-        log!("Elapsed time: {:?}", elapsed_time);
 
         let new_position = info.position + elapsed_time as i32;
 
@@ -157,7 +164,6 @@ pub fn Footer() -> impl IntoView {
         }
 
         info.timestamp = current_time;
-        log!("Updated position: {:?}", info.position);
 
         set_track_info.set(info);
     };
