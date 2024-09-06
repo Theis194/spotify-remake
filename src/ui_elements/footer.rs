@@ -213,15 +213,15 @@ pub fn Footer() -> impl IntoView {
                 }}
             </Transition>
             <div class="grid grid-cols-[auto_1fr_auto] items-center">
-                <div class="flex flex-row gap-4 items-center">
+                <div class="flex flex-row gap-4 items-center overflow-hidden truncate">
                     <img src={move || {track_info.get().image}} class="rounded w-14 h-14" />
-                    <div>
-                        <h2 class="text-sm -mb-1 text-neutral-content trunk">{
+                    <div class="">
+                        <h2 class="text-sm -mb-1 text-neutral-content">{
                             move || {
                                 track_info.get().name.clone()
                             }
                         }</h2>
-                        <h3 class="text-xs text-neutral-content trunk">{
+                        <h3 class="text-xs text-neutral-content">{
                             move || {
                                 track_info.get().artists.clone()
                             }

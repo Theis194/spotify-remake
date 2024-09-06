@@ -58,8 +58,75 @@ pub fn Home() -> impl IntoView {
     
     
     view! {
-        <div>
-            <h1>Home</h1>
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-row gap-2">
+                <button class="btn btn-neutral btn-sm rounded-full">"All"</button>
+                <button class="btn btn-neutral btn-sm rounded-full">"Music"</button>
+                <button class="btn btn-neutral btn-sm rounded-full">"Podcasts"</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-2">
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+                <div class="w-full aspect-w-3 aspect-h-1 bg-neutral rounded">
+                    <img src="https://via.placeholder.com/150" alt="" class="w-1/5 object-cover rounded"/>
+                </div>
+            </div>
+
+            <div>
+                <h1>"Made for ..."</h1>
+
+                <div class="carousel w-full space-x-4">
+                    <div class="carousel-item w-64 p-4 flex flex-col items-center">
+                        <img src="image1.jpg" alt="Daily Mix 1" class="w-40 h-40 object-cover rounded-lg mb-4"/>
+                        <h3 class="text-lg text-white font-bold">"Daily Mix 1"</h3>
+                        <p class="text-sm text-gray-400 truncate max-w-xs">"De Danske Hyrder, Hans Philip, Cyd og..."</p>
+                    </div>
+
+                    <div class="carousel-item w-64 p-4 flex flex-col items-center">
+                        <img src="image2.jpg" alt="Daily Mix 2" class="w-40 h-40 object-cover rounded-lg mb-4"/>
+                        <h3 class="text-lg text-white font-bold">"Daily Mix 2"</h3>
+                        <p class="text-sm text-gray-400 truncate max-w-xs">"Sub Zero Project, Refuzion, KELTEK..."</p>
+                    </div>
+
+                    <div class="carousel-item w-64 p-4 flex flex-col items-center">
+                        <img src="image3.jpg" alt="Daily Mix 3" class="w-40 h-40 object-cover rounded-lg mb-4"/>
+                        <h3 class="text-lg text-white font-bold">"Daily Mix 3"</h3>
+                        <p class="text-sm text-gray-400 truncate max-w-xs">"Enmity, puremind, Jomarijan og mere..."</p>
+                    </div>
+
+                    <div class="carousel-item w-64 p-4 flex flex-col items-center">
+                        <img src="image4.jpg" alt="Daily Mix 4" class="w-40 h-40 object-cover rounded-lg mb-4"/>
+                        <h3 class="text-lg text-white font-bold">"Daily Mix 4"</h3>
+                        <p class="text-sm text-gray-400 truncate max-w-xs">"W&W, Dash Berlin, KAROL G og mere..."</p>
+                    </div>
+
+                    <div class="carousel-item w-64 p-4 flex flex-col items-center">
+                        <img src="image5.jpg" alt="Daily Mix 5" class="w-40 h-40 object-cover rounded-lg mb-4"/>
+                        <h3 class="text-lg text-white font-bold">"Daily Mix 5"</h3>
+                        <p class="text-sm text-gray-400 truncate max-w-xs">"puremind, HARDSTYLE DEMON..."</p>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 }
